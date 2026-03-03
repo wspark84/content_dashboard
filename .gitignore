@@ -1,0 +1,8 @@
+node_modules/
+data/*.db
+data/raw/
+data/processed/
+data/content/
+data/reports/
+.env
+.DS_Store

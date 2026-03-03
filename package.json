@@ -1,0 +1,23 @@
+{
+  "name": "mungnyang-viral",
+  "version": "1.0.0",
+  "description": "멍냥바이럴 - 반려동물 콘텐츠 통합 바이럴 플랫폼",
+  "type": "module",
+  "scripts": {
+    "collect": "node src/collect/scheduler.js",
+    "analyze": "node src/analyze/topic-selector.js",
+    "blog:expert": "node cron/morning-post.js",
+    "blog:general": "node cron/afternoon-post.js",
+    "report": "node cron/daily-report.js",
+    "dashboard": "node dashboard/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.0.0",
+    "express": "^5.2.1",
+    "node-fetch": "^3.3.0",
+    "puppeteer": "^23.0.0"
+  }
+}

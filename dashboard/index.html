@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>멍냥바이럴 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script>tailwind.config={theme:{extend:{colors:{bg:'#0f172a',card:'#1e293b',accent:'#38bdf8',green:'#22c55e',red:'#ef4444',yellow:'#eab308',purple:'#a78bfa'}}}}</script>
+  <style>
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Pretendard', -apple-system, sans-serif; }
+    .card { background: #1e293b; border-radius: 12px; border: 1px solid #334155; }
+    .badge { padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .badge-draft { background: #374151; color: #9ca3af; }
+    .badge-review { background: #854d0e33; color: #eab308; }
+    .badge-approved { background: #14532d33; color: #22c55e; }
+    .badge-published { background: #1e3a5f33; color: #38bdf8; }
+    .btn { padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: .15s; }
+    .btn:hover { filter: brightness(1.2); }
+    .btn-approve { background: #22c55e; color: #fff; }
+    .btn-reject { background: #ef4444; color: #fff; }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">🐾</span>
+      <h1 class="text-xl font-bold">멍냥바이럴 대시보드</h1>
+    </div>
+    <div class="text-sm text-slate-400" id="clock"></div>
+  </header>
+
+  <main class="p-6 max-w-[1400px] mx-auto space-y-6">
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="stat-cards">
+      <div class="card p-4"><div class="text-slate-400 text-sm">총 콘텐츠</div><div class="text-2xl font-bold mt-1" id="s-total">-</div></div>
+      <div class="card p-4"><div class="text-slate-400 text-sm">오늘 발행</div><div class="text-2xl font-bold mt-1 text-green-400" id="s-today">-</div></div>
+      <div class="card p-4"><div class="text-slate-400 text-sm">총 조회수</div><div class="text-2xl font-bold mt-1 text-sky-400" id="s-views">-</div></div>
+      <div class="card p-4"><div class="text-slate-400 text-sm">총 전환</div><div class="text-2xl font-bold mt-1 text-purple-400" id="s-conv">-</div></div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Trending -->
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">🔥 트렌드 레이더</h2>
+        <div id="trending-list" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
+        <div id="trending-empty" class="text-slate-500 text-sm hidden">오늘의 트렌드 데이터가 없습니다</div>
+      </div>
+
+      <!-- Performance Chart -->
+      <div class="md:col-span-2 card p-5">
+        <h2 class="font-bold text-lg mb-4">📈 일별 성과</h2>
+        <canvas id="perfChart" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Content Queue -->
+      <div class="md:col-span-2 card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-lg">📋 콘텐츠 큐</h2>
+          <div class="flex gap-2 text-xs">
+            <button onclick="filterContents('')" class="px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600">전체</button>
+            <button onclick="filterContents('draft')" class="px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600">초안</button>
+            <button onclick="filterContents('review')" class="px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600">검수중</button>
+            <button onclick="filterContents('published')" class="px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600">발행됨</button>
+          </div>
+        </div>
+        <div id="content-list" class="space-y-2 max-h-[500px] overflow-y-auto"></div>
+        <div id="content-empty" class="text-slate-500 text-sm hidden">콘텐츠가 없습니다</div>
+      </div>
+
+      <!-- Team Activity -->
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">👥 팀 활동</h2>
+        <div id="team-list" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
+        <div id="team-empty" class="text-slate-500 text-sm hidden">활동 로그가 없습니다</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API = '';
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+    updateClock(); setInterval(updateClock, 30000);
+
+    // Fetch helpers
+    async function api(path) { return (await fetch(API + path)).json(); }
+    async function apiPost(path, body={}) {
+      return (await fetch(API + path, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })).json();
+    }
+
+    // Stats
+    async function loadStats() {
+      const [stats, perf] = await Promise.all([api('/api/stats'), api('/api/performance?days=30')]);
+      document.getElementById('s-total').textContent = stats.total.toLocaleString();
+      document.getElementById('s-today').textContent = stats.todayPublished;
+      document.getElementById('s-views').textContent = (perf.totals?.total_views || 0).toLocaleString();
+      document.getElementById('s-conv').textContent = (perf.totals?.total_conversions || 0).toLocaleString();
+      return perf;
+    }
+
+    // Performance Chart
+    let chart;
+    function renderChart(data) {
+      const labels = data.daily.map(d => d.date.slice(5));
+      const views = data.daily.map(d => d.views || 0);
+      const clicks = data.daily.map(d => d.clicks || 0);
+      const ctx = document.getElementById('perfChart').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: '조회수', data: views, borderColor: '#38bdf8', backgroundColor: '#38bdf822', fill: true, tension: 0.3 },
+            { label: '클릭', data: clicks, borderColor: '#a78bfa', backgroundColor: '#a78bfa22', fill: true, tension: 0.3 },
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#94a3b8' } } },
+          scales: {
+            x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+            y: { ticks: { color: '#64748b' }, grid: { color: '#334155' } }
+          }
+        }
+      });
+    }
+
+    // Trending
+    async function loadTrending() {
+      const data = await api('/api/trending');
+      const el = document.getElementById('trending-list');
+      const empty = document.getElementById('trending-empty');
+      if (!data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      el.innerHTML = data.map((t, i) => `
+        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-slate-700/50 transition">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-500 w-5">${i+1}</span>
+            <span class="font-medium text-sm">${t.keyword}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-20 bg-slate-700 rounded-full h-1.5">
+              <div class="h-1.5 rounded-full bg-sky-400" style="width:${Math.min(t.score*10,100)}%"></div>
+            </div>
+            <span class="text-xs text-slate-400">${t.score?.toFixed(1) || '-'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Contents
+    let allContents = [];
+    async function loadContents() {
+      allContents = await api('/api/contents');
+      renderContents(allContents);
+    }
+    function filterContents(status) {
+      renderContents(status ? allContents.filter(c => c.status === status) : allContents);
+    }
+    function renderContents(list) {
+      const el = document.getElementById('content-list');
+      const empty = document.getElementById('content-empty');
+      if (!list.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      el.innerHTML = list.map(c => `
+        <div class="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="badge badge-${c.status}">${statusLabel(c.status)}</span>
+              <span class="text-xs text-slate-500">${c.type || ''}</span>
+            </div>
+            <div class="font-medium text-sm mt-1 truncate">${c.title || '(제목 없음)'}</div>
+            <div class="text-xs text-slate-500 mt-0.5">${c.created_at || ''}</div>
+          </div>
+          <div class="flex gap-2 ml-3 shrink-0">
+            ${c.status === 'review' || c.status === 'draft' ? `
+              <button class="btn btn-approve" onclick="doApprove(${c.id})">승인</button>
+              <button class="btn btn-reject" onclick="doReject(${c.id})">반려</button>
+            ` : ''}
+            ${c.published_url ? `<a href="${c.published_url}" target="_blank" class="btn bg-slate-600 text-white">보기</a>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+    function statusLabel(s) {
+      return { draft:'초안', review:'검수중', approved:'승인됨', published:'발행됨', failed:'실패' }[s] || s;
+    }
+
+    async function doApprove(id) {
+      await apiPost(`/api/contents/${id}/approve`);
+      loadContents(); loadTeam();
+    }
+    async function doReject(id) {
+      await apiPost(`/api/contents/${id}/reject`);
+      loadContents(); loadTeam();
+    }
+
+    // Team
+    async function loadTeam() {
+      const data = await api('/api/team?limit=30');
+      const el = document.getElementById('team-list');
+      const empty = document.getElementById('team-empty');
+      if (!data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      const icons = { approve:'✅', reject:'❌', edit:'✏️', comment:'💬', 'status:published':'🎉', 'status:approved':'✅', 'status:review':'🔍', 'status:draft':'📝' };
+      el.innerHTML = data.map(l => `
+        <div class="flex gap-3 text-sm">
+          <span>${icons[l.action] || '📌'}</span>
+          <div>
+            <span class="text-slate-300">${l.user_role || 'system'}</span>
+            <span class="text-slate-500">· ${l.action}</span>
+            ${l.content_title ? `<div class="text-xs text-slate-500 truncate">${l.content_title}</div>` : ''}
+            <div class="text-xs text-slate-600">${l.created_at || ''}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Init
+    async function init() {
+      const perf = await loadStats();
+      renderChart(perf);
+      await Promise.all([loadTrending(), loadContents(), loadTeam()]);
+    }
+    init();
+    setInterval(init, 60000); // 1분마다 갱신
+  </script>
+</body>
+</html>
