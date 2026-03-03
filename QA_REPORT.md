@@ -65,7 +65,85 @@
 - 수정: —
 - 상태: ❌ 미수정 (UNIQUE 제약 위반은 정상이므로 무시 가능하나, 다른 에러도 삼켜버림)
 
-## 통합 테스트 결과
+---
+
+## Phase 2 QA 검증
+
+**검증일**: 2026-03-04 00:41 KST
+**검증자**: QA 비판가 서브에이전트
+
+### Phase 2 신규 파일 (15개)
+
+| 파일 | import 테스트 | 코드 품질 | 비고 |
+|------|:---:|:---:|------|
+| src/create/blog-expert.js | ✅ | ✅ | 파라미터 바인딩, try/finally/closeDb |
+| src/create/blog-general.js | ✅ | ✅ | 동일 패턴 |
+| src/create/quality-check.js | ✅ | ✅ | config.quality 참조 일관 |
+| src/create/image-gen.js | ✅ | ✅ | TODO 스텁, null 반환 시 스킵 |
+| src/create/templates/expert.js | ✅ | ✅ | CTA 고정, 금지어 프롬프트에 명시 |
+| src/create/templates/general.js | ✅ | ✅ | CTA_FIXED 재사용 |
+| src/publish/naver-blog.js | ✅ | ✅ | innerHTML 미사용, keyboard.type 방식 |
+| src/publish/instagram.js | ✅ | ✅ | 스텁, dryRun 지원 |
+| src/publish/queue.js | ✅ | ✅ | **dry-run 기본값 (`|| true`)** |
+| src/publish/community.js | ✅ | ✅ | 스텁, dryRun 지원 |
+| src/track/conversion.js | ✅ | ✅ | 파라미터 바인딩, BITLY_TOKEN 환경변수 |
+| src/track/funnel.js | ✅ | ✅ | 파라미터 바인딩, safe division |
+| src/track/social-stats.js | ✅ | ✅ | oEmbed API (키 불필요) |
+| cron/collect.js | ✅ | ✅ | 에러 격리 (개별 collector try/catch) |
+| dashboard/server.js | ✅ | ✅ | 신규 API 4개 추가 (/funnel, /pipeline, /cta-summary, /stats) |
+
+### 검증 항목 결과
+
+#### 1. SQL Injection 방지: ✅ 통과
+모든 DB 쿼리가 `?` 파라미터 바인딩 사용. 문자열 보간으로 SQL 구성하는 곳 없음.
+
+#### 2. 에러 핸들링: ✅ 통과
+- CLI 실행 시 `try/finally { closeDb() }` 패턴 일관 적용
+- queue.js: 개별 발행 실패 시 재시도 3회 + 격리 (다른 콘텐츠 계속 처리)
+- cron/collect.js: 개별 collector 실패 시 격리
+
+#### 3. config.js 참조 일관성: ✅ 통과
+- 모든 Phase 2 파일이 `../shared/config.js` import
+- quality-check.js가 `config.quality` 직접 참조
+- naver-blog.js가 `config.blog` 참조
+
+#### 4. 금지어 일치: ✅ 통과
+- config.quality.bannedWords: `['수의사 출신', '[IMAGE:', '[IMAGE]']`
+- quality-check.js: `body.includes(word)` 로 검사
+- 템플릿 프롬프트: `"수의사 출신" 절대 사용 금지`, `"[IMAGE:" 금지` 명시
+
+#### 5. 하드코딩 없음: ✅ 통과
+- BLOG_ID: `config.blog?.id` → config에서 참조
+- PORT 3200: dashboard 전용 상수 (config 외부화 불필요)
+- MAX_RETRIES: 모듈 상수로 적절
+
+#### 6. 발행 안전성: ✅ 통과
+- naver-blog.js: innerHTML 사용 없음 (검색 결과 0건)
+- queue.js: CLI 실행 시 `const dryRun = ... || true` → **항상 dry-run**
+- 실제 발행: `status = 'approved'` 조건 → draft 상태에서는 절대 실행 안됨
+
+### 통합 파이프라인 테스트
+
+| 단계 | 명령 | 결과 |
+|------|------|------|
+| 크롤링 | `cron/collect.js` | ✅ 210건 수집 |
+| 분석 | `topic-selector.js` | ✅ 주제 선정 완료 |
+| 전문글 생성 | `blog-expert.js` | ✅ 2건 생성 (draft) |
+| 일반글 생성 | `blog-general.js` | ✅ 2건 생성 (draft) |
+| 품질 검증 | `quality-check.js` | ✅ 실행 완료 |
+| 발행 큐 | `queue.js` | ✅ dry-run 기본, 0건 (approved 없음) |
+| API /trending | `curl` | ✅ JSON 정상 |
+| API /contents | `curl` | ✅ JSON 정상 |
+| API /funnel | `curl` | ✅ JSON 정상 (데이터 0) |
+| API /pipeline | `curl` | ✅ JSON 정상 (draft 8건) |
+
+### Phase 2 이슈: 없음 🎉
+
+모든 검증 항목 통과. 코드 수정 불필요.
+
+---
+
+## Phase 1 통합 테스트 결과
 
 | 단계 | 결과 | 비고 |
 |------|------|------|

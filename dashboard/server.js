@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { getDb } from '../src/shared/db.js';
 import { approve, reject, getTeamLogs } from '../src/team/approval.js';
+import { calculateFunnel, dailyFunnel } from '../src/track/funnel.js';
+import { getCtaSummary } from '../src/track/conversion.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -76,6 +78,26 @@ app.get('/api/stats', (req, res) => {
     SELECT COUNT(*) as cnt FROM contents WHERE status='published' AND DATE(published_at)=date('now')
   `).get();
   res.json({ statusCounts: counts, total: total.cnt, todayPublished: todayPublished.cnt });
+});
+
+app.get('/api/funnel', (req, res) => {
+  const days = parseInt(req.query.days) || 30;
+  const funnel = calculateFunnel({ days });
+  const daily = dailyFunnel(parseInt(req.query.trend_days) || 14);
+  res.json({ funnel, daily });
+});
+
+app.get('/api/cta-summary', (req, res) => {
+  res.json(getCtaSummary());
+});
+
+app.get('/api/pipeline', (req, res) => {
+  const db = getDb();
+  const pipeline = db.prepare(`
+    SELECT status, type, COUNT(*) as cnt
+    FROM contents GROUP BY status, type ORDER BY status, type
+  `).all();
+  res.json(pipeline);
 });
 
 app.post('/api/contents/:id/approve', (req, res) => {

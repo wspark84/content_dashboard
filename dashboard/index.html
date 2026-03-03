@@ -56,6 +56,23 @@
       </div>
     </div>
 
+    <!-- Funnel + Pipeline Row -->
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Funnel -->
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">🔄 전환 퍼널</h2>
+        <div id="funnel-bars" class="space-y-3"></div>
+        <div id="funnel-empty" class="text-slate-500 text-sm hidden">퍼널 데이터가 없습니다</div>
+      </div>
+
+      <!-- Pipeline -->
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">⚙️ 콘텐츠 파이프라인</h2>
+        <div id="pipeline-status" class="space-y-2"></div>
+        <div id="pipeline-empty" class="text-slate-500 text-sm hidden">파이프라인 데이터 없음</div>
+      </div>
+    </div>
+
     <div class="grid md:grid-cols-3 gap-6">
       <!-- Content Queue -->
       <div class="md:col-span-2 card p-5">
@@ -226,11 +243,62 @@
       `).join('');
     }
 
+    // Funnel
+    async function loadFunnel() {
+      const data = await api('/api/funnel?days=30');
+      const el = document.getElementById('funnel-bars');
+      const empty = document.getElementById('funnel-empty');
+      const f = data.funnel;
+      if (!f || (f.impressions === 0 && f.clicks === 0)) {
+        el.innerHTML = ''; empty.classList.remove('hidden'); return;
+      }
+      empty.classList.add('hidden');
+      const stages = [
+        { label: '노출', value: f.impressions, color: '#38bdf8' },
+        { label: '클릭', value: f.clicks, color: '#a78bfa', rate: f.conversionRates.clickRate },
+        { label: '관심(CTA)', value: f.interest, color: '#eab308', rate: f.conversionRates.interestRate },
+        { label: '상담', value: f.consultations, color: '#22c55e', rate: f.conversionRates.consultRate },
+        { label: '구매', value: f.purchases, color: '#ef4444', rate: f.conversionRates.purchaseRate },
+      ];
+      const max = Math.max(...stages.map(s => s.value), 1);
+      el.innerHTML = stages.map(s => `
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span>${s.label}</span>
+            <span class="text-slate-400">${s.value.toLocaleString()}${s.rate != null ? ` (${s.rate}%)` : ''}</span>
+          </div>
+          <div class="w-full bg-slate-700 rounded-full h-4">
+            <div class="h-4 rounded-full transition-all" style="width:${Math.max(s.value/max*100,2)}%;background:${s.color}"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Pipeline
+    async function loadPipeline() {
+      const data = await api('/api/pipeline');
+      const el = document.getElementById('pipeline-status');
+      const empty = document.getElementById('pipeline-empty');
+      if (!data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      const statusColors = { draft:'#9ca3af', review:'#eab308', approved:'#22c55e', published:'#38bdf8', failed:'#ef4444' };
+      el.innerHTML = data.map(p => `
+        <div class="flex items-center justify-between p-2 rounded bg-slate-800/50">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full" style="background:${statusColors[p.status]||'#64748b'}"></div>
+            <span class="text-sm">${statusLabel(p.status)}</span>
+            <span class="text-xs text-slate-500">${p.type || ''}</span>
+          </div>
+          <span class="text-sm font-bold">${p.cnt}</span>
+        </div>
+      `).join('');
+    }
+
     // Init
     async function init() {
       const perf = await loadStats();
       renderChart(perf);
-      await Promise.all([loadTrending(), loadContents(), loadTeam()]);
+      await Promise.all([loadTrending(), loadContents(), loadTeam(), loadFunnel(), loadPipeline()]);
     }
     init();
     setInterval(init, 60000); // 1분마다 갱신
