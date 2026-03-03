@@ -143,6 +143,69 @@
 
 ---
 
+## Phase 3 QA 검증 + 최종 보안 점검
+
+**검증일**: 2026-03-04 00:49 KST
+**검증자**: QA 비판가 서브에이전트
+
+### 보안 점검 결과
+
+#### API 키 하드코딩 전수 검사: ✅ 통과
+- `grep -rn` 으로 6개 키 패턴 (`EVs9p9i`, `xkC9boa`, `k9hnpor`, `pZtV7K7`, `tmakxmv`, `lifelogics`) 검색
+- 발견: `lifelogics` — config.js의 블로그 ID (공개 정보, 비밀 아님) ✅ 안전
+- 발견: QA_REPORT.md 내 `k9hnporr2z` 언급 — 과거 이슈 기록용, 코드 아님 ✅ 안전
+- **실제 API 키/비밀번호 하드코딩: 0건**
+
+#### .gitignore 확인: ✅ 통과
+- `.env`, `.env.*` 포함 확인
+- `node_modules/`, `data/*.db` 등 적절히 제외
+
+### Phase 3 모듈 import 테스트: ✅ 전체 통과
+
+| 파일 | 결과 |
+|------|:---:|
+| src/optimize/ab-test.js | ✅ |
+| src/optimize/learner.js | ✅ |
+| src/optimize/recycler.js | ✅ |
+| src/team/auth.js | ✅ |
+| src/team/dashboard-api.js | ✅ |
+| cron/full-pipeline.js | ✅ |
+
+### 전체 파이프라인 통합 테스트 (full-pipeline.js)
+
+| 단계 | 결과 | 소요시간 | 비고 |
+|------|:---:|---:|------|
+| 1. 크롤링 (5개 소스) | ✅ | 16.5s | 1건 신규 (DC), Reddit r/petfood 403 (기존 이슈) |
+| 2. 분석 + 주제 선정 | ❌ | 4.9s | FOREIGN KEY constraint failed |
+| 3. 콘텐츠 생성 (expert) | ✅ | 0ms | 기존 4건 스킵 |
+| 3. 콘텐츠 생성 (general) | ✅ | 0ms | 기존 4건 스킵 |
+| 4. 품질 검증 | ✅ | 1ms | 0건 (신규 없음) |
+| 5. 학습 규칙 | ✅ | 1ms | 3개 규칙 생성 |
+| **전체** | ⚠️ | **21.4s** | analyze 단계 FK 에러 (비파괴적, 프로세스 계속 진행) |
+
+#### [심각도: MED] analyze 단계 FOREIGN KEY constraint failed
+- 원인: scorer.js에서 topics 테이블 insert 시 참조 무결성 위반 추정
+- 영향: 신규 주제 선정 불가 (기존 주제는 유지)
+- 상태: ❌ 미수정 (DB 스키마 점검 필요)
+
+### 대시보드 최종 테스트: ✅ 전체 통과
+
+| 엔드포인트 | 결과 | 비고 |
+|------|:---:|------|
+| `GET /` | ✅ | HTML 정상 렌더링 |
+| `GET /api/trending` | ✅ | 20건 JSON 반환 |
+| `GET /api/optimize/ab-tests` | ✅ | 빈 배열 (테스트 데이터 없음, 정상) |
+| `GET /api/optimize/rules` | ✅ | 3건 학습 규칙 반환 |
+
+### Phase 3 요약
+
+- **보안**: ✅ API 키 하드코딩 없음, .gitignore 정상
+- **모듈**: ✅ 6개 전체 import 성공
+- **파이프라인**: ⚠️ analyze FK 에러 1건 (나머지 정상)
+- **대시보드**: ✅ 4개 엔드포인트 정상
+
+---
+
 ## Phase 1 통합 테스트 결과
 
 | 단계 | 결과 | 비고 |

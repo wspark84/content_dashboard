@@ -8,11 +8,13 @@ import { getDb } from '../src/shared/db.js';
 import { approve, reject, getTeamLogs } from '../src/team/approval.js';
 import { calculateFunnel, dailyFunnel } from '../src/track/funnel.js';
 import { getCtaSummary } from '../src/track/conversion.js';
+import { teamApiRouter } from '../src/team/dashboard-api.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
+app.use(teamApiRouter);
 
 // --- API ---
 
@@ -116,6 +118,35 @@ app.post('/api/contents/:id/reject', (req, res) => {
   } catch (e) {
     res.status(400).json({ ok: false, error: e.message });
   }
+});
+
+// --- Phase 3 API (스텁) ---
+
+app.get('/api/optimize/ab-tests', (req, res) => {
+  const db = getDb();
+  try {
+    const rows = db.prepare('SELECT * FROM ab_tests ORDER BY created_at DESC LIMIT 20').all();
+    res.json(rows);
+  } catch {
+    res.json([]);
+  }
+});
+
+app.get('/api/optimize/rules', (req, res) => {
+  const db = getDb();
+  try {
+    const rows = db.prepare('SELECT * FROM learned_rules ORDER BY created_at DESC LIMIT 20').all();
+    res.json(rows);
+  } catch {
+    res.json([]);
+  }
+});
+
+app.post('/api/pipeline/run', (req, res) => {
+  // 스텁 — 전체 파이프라인 수동 실행
+  // TODO: child_process로 collect → analyze → create → publish 순차 실행
+  console.log('[pipeline] 수동 실행 요청');
+  res.json({ ok: true, message: '파이프라인 실행 시작 (스텁)' });
 });
 
 const PORT = 3200;

@@ -13,8 +13,8 @@ export const config = {
   // 네이버 블로그
   blog: {
     id: 'lifelogics',
-    username: process.env.NAVER_USERNAME || 'lifelogics',
-    password: process.env.NAVER_PASSWORD,
+    username: process.env.NAVER_USERNAME || '',
+    password: process.env.NAVER_PASSWORD || '',
   },
   
   // 크롤링 소스
@@ -80,10 +80,15 @@ export const config = {
     id: '1EIJOmZVaCMWcrYKP7M0mhSEzmwMtealslfiqwC3WjR8',
   },
 
-  // 네이버 API
+  // 네이버 개발자 API (developers.naver.com) — 카페/검색/블로그
+  naverDev: {
+    clientId: process.env.NAVER_CLIENT_ID || '',
+    clientSecret: process.env.NAVER_CLIENT_SECRET || '',
+  },
+  // 네이버 클라우드 플랫폼 (NCP) — 지도/뉴스
   naver: {
-    clientId: process.env.NCP_CLIENT_ID || 'k9hnporr2z',
-    clientSecret: process.env.NCP_CLIENT_SECRET || 'pZtV7K7R8HRGMdjdzsTRVBhjh3e9Bp6yGgt2YClR',
+    clientId: process.env.NCP_CLIENT_ID || '',
+    clientSecret: process.env.NCP_CLIENT_SECRET || '',
   },
 
   // 발행 설정

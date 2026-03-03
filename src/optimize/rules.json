@@ -1,0 +1,6 @@
+[
+  {"category": "title_style", "rule": "물음표형 제목 우선", "confidence": 0.5},
+  {"category": "publish_time", "rule": "오전 9시 전문글, 오후 3시 일반글", "confidence": 0.5},
+  {"category": "content_length", "rule": "1800-2200자가 최적", "confidence": 0.5},
+  {"category": "cta_position", "rule": "하단 CTA가 기본", "confidence": 0.5}
+]

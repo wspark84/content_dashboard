@@ -87,10 +87,12 @@ async function selectTopics() {
 }
 
 // 직접 실행 시
-selectTopics().catch(err => {
-  console.error('❌ 파이프라인 에러:', err.message);
-  closeDb();
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  selectTopics().catch(err => {
+    console.error('❌ 파이프라인 에러:', err.message);
+    closeDb();
+    process.exit(1);
+  });
+}
 
 export { selectTopics };
