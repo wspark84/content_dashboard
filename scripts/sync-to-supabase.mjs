@@ -62,7 +62,16 @@ async function upsertToSupabase(table, rows) {
       ? 'return=minimal,resolution=ignore-duplicates'
       : 'return=minimal,resolution=merge-duplicates';
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    // Add on_conflict for tables with unique constraints
+    const CONFLICT_COLUMNS = {
+      'trending_topics': 'date,keyword',
+    };
+    let url = `${SUPABASE_URL}/rest/v1/${table}`;
+    if (CONFLICT_COLUMNS[table]) {
+      url += `?on_conflict=${CONFLICT_COLUMNS[table]}`;
+    }
+
+    const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

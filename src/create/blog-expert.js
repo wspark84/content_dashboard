@@ -1,15 +1,15 @@
-// 전문글 생성기 — 프롬프트 생성 + 템플릿 초안 + DB 저장
+// 전문글 생성기 — OpenAI 연동 + 템플릿 폴백
 import { getDb, closeDb } from '../shared/db.js';
 import { buildExpertPrompt, buildExpertDraft } from './templates/expert.js';
 import { checkQuality } from './quality-check.js';
+import { callOpenAI } from './openai-client.js';
 
 /**
- * selected 주제에서 커뮤니티 질문과 Reddit 인사이트를 가져온다.
+ * 커뮤니티 질문과 Reddit 인사이트 수집
  */
 function gatherMaterial(db, topic) {
   const keyword = topic.keyword;
 
-  // 커뮤니티 질문 (강사모/고다행)
   const communityPosts = db.prepare(`
     SELECT title, body FROM raw_posts
     WHERE source IN ('gangsamo', 'godahang')
@@ -19,7 +19,6 @@ function gatherMaterial(db, topic) {
 
   const communityQuestions = communityPosts.map(p => p.title).filter(Boolean);
 
-  // Reddit 인사이트
   const redditPosts = db.prepare(`
     SELECT title, body FROM raw_posts
     WHERE source = 'reddit'
@@ -32,11 +31,9 @@ function gatherMaterial(db, topic) {
     return snippet;
   }).filter(Boolean);
 
-  // sample_questions 보충
   if (communityQuestions.length === 0 && topic.sample_questions) {
     try {
-      const sq = JSON.parse(topic.sample_questions);
-      communityQuestions.push(...sq.slice(0, 3));
+      communityQuestions.push(...JSON.parse(topic.sample_questions).slice(0, 3));
     } catch { /* ignore */ }
   }
 
@@ -44,9 +41,10 @@ function gatherMaterial(db, topic) {
 }
 
 /**
- * 전문글 생성 메인
+ * 전문글 생성 메인 — OpenAI 사용, 실패 시 템플릿 폴백
  */
-export function createExpertPosts() {
+export async function createExpertPosts(options = {}) {
+  const { useAI = true } = options;
   const db = getDb();
 
   const topics = db.prepare(`
@@ -68,7 +66,6 @@ export function createExpertPosts() {
   const results = [];
 
   for (const topic of topics) {
-    // 이미 생성된 콘텐츠가 있는지 체크
     const existing = db.prepare(`
       SELECT id FROM contents WHERE topic_id = ? AND type = 'blog_expert'
     `).get(topic.id);
@@ -78,35 +75,41 @@ export function createExpertPosts() {
     }
 
     const { communityQuestions, redditInsights } = gatherMaterial(db, topic);
+    const prompt = buildExpertPrompt({ keyword: topic.keyword, communityQuestions, redditInsights, cluster: topic.cluster });
+    
+    let draft;
+    let source = 'template';
 
-    // 프롬프트 생성 (크론잡에서 Claude 호출 시 사용)
-    const prompt = buildExpertPrompt({
-      keyword: topic.keyword,
-      communityQuestions,
-      redditInsights,
-      cluster: topic.cluster,
-    });
+    if (useAI) {
+      try {
+        draft = await callOpenAI(prompt);
+        source = 'openai';
+        console.log(`[expert] #${topic.id} "${topic.keyword}" — OpenAI 생성 성공`);
+      } catch (err) {
+        console.warn(`[expert] OpenAI 실패, 템플릿 폴백:`, err.message);
+        draft = buildExpertDraft({ keyword: topic.keyword, communityQuestions, redditInsights });
+      }
+    } else {
+      draft = buildExpertDraft({ keyword: topic.keyword, communityQuestions, redditInsights });
+    }
 
-    // 템플릿 기반 초안 (LLM 없이)
-    const draft = buildExpertDraft({
-      keyword: topic.keyword,
-      communityQuestions,
-      redditInsights,
-    });
+    // 제목 추출 또는 기본 제목
+    let title = `${topic.keyword}, 전문가가 알려드립니다`;
+    const firstLine = draft.split('\n')[0];
+    if (firstLine?.startsWith('#')) {
+      title = firstLine.replace(/^#+\s*/, '');
+      draft = draft.split('\n').slice(1).join('\n').trim();
+    }
 
-    const title = `${topic.keyword}, 전문가가 알려드립니다`;
     const tags = JSON.stringify([topic.keyword, ...(topic.cluster ? topic.cluster.split(',').map(s => s.trim()) : [])]);
-
-    // 품질 검증
     const issues = checkQuality(draft, topic.keyword);
     const reviewNote = issues.length === 0
-      ? '✅ 품질 검증 통과'
-      : `⚠️ 이슈 ${issues.length}건:\n${issues.map(i => `- ${i}`).join('\n')}\n\n---\n[프롬프트]\n${prompt}`;
+      ? `✅ 품질 검증 통과 (${source})`
+      : `⚠️ 이슈 ${issues.length}건 (${source}):\n${issues.map(i => `- ${i}`).join('\n')}`;
 
     const info = insert.run(topic.id, title, draft, tags, reviewNote);
-    console.log(`[expert] #${topic.id} "${topic.keyword}" → contents #${info.lastInsertRowid} (draft)`);
-
-    results.push({ topicId: topic.id, contentId: info.lastInsertRowid, keyword: topic.keyword, issues });
+    console.log(`[expert] #${topic.id} "${topic.keyword}" → contents #${info.lastInsertRowid} (draft, ${source})`);
+    results.push({ topicId: topic.id, contentId: info.lastInsertRowid, keyword: topic.keyword, source, issues });
   }
 
   console.log(`[expert] ${results.length}건 생성 완료`);
@@ -114,9 +117,12 @@ export function createExpertPosts() {
 }
 
 // CLI
-if (process.argv[1] && process.argv[1].includes('blog-expert')) {
+if (process.argv[1]?.includes('blog-expert')) {
   try {
-    createExpertPosts();
+    const useAI = !process.argv.includes('--no-ai');
+    await createExpertPosts({ useAI });
+  } catch (err) {
+    console.error('❌ Error:', err.message);
   } finally {
     closeDb();
   }
