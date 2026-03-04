@@ -1,6 +1,6 @@
-// 일반글 생성기 — OpenAI 연동 + 템플릿 폴백
+// 일반글 생성기 — OpenAI 연동 (템플릿 폴백 제거)
 import { getDb, closeDb } from '../shared/db.js';
-import { buildGeneralPrompt, buildGeneralDraft } from './templates/general.js';
+import { buildGeneralPrompt } from './templates/general.js';
 import { checkQuality } from './quality-check.js';
 import { callOpenAI } from './openai-client.js';
 
@@ -53,21 +53,24 @@ export async function createGeneralPosts(options = {}) {
     const prompt = buildGeneralPrompt({ keyword: topic.keyword, communityQuestions, cluster: topic.cluster });
     
     let draft;
-    let source = 'template';
+    let source = 'openai';
 
-    if (useAI) {
-      try {
-        draft = await callOpenAI(prompt, {
-          systemPrompt: '당신은 반려동물 전문 블로거 "멍냥닥터"입니다. 친근하고 가벼운 톤으로 실용적인 정보를 전달합니다.',
-        });
-        source = 'openai';
-        console.log(`[general] #${topic.id} "${topic.keyword}" — OpenAI 생성 성공`);
-      } catch (err) {
-        console.warn(`[general] OpenAI 실패, 템플릿 폴백:`, err.message);
-        draft = buildGeneralDraft({ keyword: topic.keyword, communityQuestions });
-      }
-    } else {
-      draft = buildGeneralDraft({ keyword: topic.keyword, communityQuestions });
+    try {
+      draft = await callOpenAI(prompt, {
+        systemPrompt: '당신은 반려동물 전문 블로거 "멍냥닥터"입니다. 친근하고 가벼운 톤으로 실용적인 정보를 전달합니다.',
+      });
+      console.log(`[general] #${topic.id} "${topic.keyword}" — OpenAI 생성 성공`);
+    } catch (err) {
+      console.error(`[general] #${topic.id} "${topic.keyword}" — OpenAI 실패:`, err.message);
+      // 템플릿 폴백 없이 failed 처리
+      const failInsert = db.prepare(`
+        INSERT INTO contents (topic_id, type, title, body, tags, status, review_note)
+        VALUES (?, 'blog_general', ?, '', ?, 'failed', ?)
+      `);
+      const tags = JSON.stringify([topic.keyword]);
+      failInsert.run(topic.id, `${topic.keyword} (생성 실패)`, tags, `❌ OpenAI 호출 실패: ${err.message}`);
+      results.push({ topicId: topic.id, keyword: topic.keyword, source: 'failed', issues: [err.message] });
+      continue;
     }
 
     let title = `${topic.keyword}, 꼭 알아야 할 꿀팁 모음`;

@@ -1,6 +1,6 @@
-// 전문글 생성기 — OpenAI 연동 + 템플릿 폴백
+// 전문글 생성기 — OpenAI 연동 (템플릿 폴백 제거)
 import { getDb, closeDb } from '../shared/db.js';
-import { buildExpertPrompt, buildExpertDraft } from './templates/expert.js';
+import { buildExpertPrompt } from './templates/expert.js';
 import { checkQuality } from './quality-check.js';
 import { callOpenAI } from './openai-client.js';
 
@@ -78,19 +78,22 @@ export async function createExpertPosts(options = {}) {
     const prompt = buildExpertPrompt({ keyword: topic.keyword, communityQuestions, redditInsights, cluster: topic.cluster });
     
     let draft;
-    let source = 'template';
+    let source = 'openai';
 
-    if (useAI) {
-      try {
-        draft = await callOpenAI(prompt);
-        source = 'openai';
-        console.log(`[expert] #${topic.id} "${topic.keyword}" — OpenAI 생성 성공`);
-      } catch (err) {
-        console.warn(`[expert] OpenAI 실패, 템플릿 폴백:`, err.message);
-        draft = buildExpertDraft({ keyword: topic.keyword, communityQuestions, redditInsights });
-      }
-    } else {
-      draft = buildExpertDraft({ keyword: topic.keyword, communityQuestions, redditInsights });
+    try {
+      draft = await callOpenAI(prompt);
+      console.log(`[expert] #${topic.id} "${topic.keyword}" — OpenAI 생성 성공`);
+    } catch (err) {
+      console.error(`[expert] #${topic.id} "${topic.keyword}" — OpenAI 실패:`, err.message);
+      // 템플릿 폴백 없이 failed 처리
+      const failInsert = db.prepare(`
+        INSERT INTO contents (topic_id, type, title, body, tags, status, review_note)
+        VALUES (?, 'blog_expert', ?, '', ?, 'failed', ?)
+      `);
+      const tags = JSON.stringify([topic.keyword]);
+      failInsert.run(topic.id, `${topic.keyword} (생성 실패)`, tags, `❌ OpenAI 호출 실패: ${err.message}`);
+      results.push({ topicId: topic.id, keyword: topic.keyword, source: 'failed', issues: [err.message] });
+      continue;
     }
 
     // 제목 추출 또는 기본 제목

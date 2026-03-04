@@ -42,6 +42,87 @@ function isBannedKeyword(word) {
   return BANNED_KEYWORDS.has(word) || [...BANNED_KEYWORDS].some(b => word.includes(b));
 }
 
+// ── 불용어 리스트 (확장) ──
+const STOPWORDS_KO = new Set([
+  // 일반 불용어
+  '있는', '하는', '되는', '그리고', '이런', '저런', '우리', '질문', '추천', '부탁',
+  '합니다', '입니다', '네요', '있어요', '없어요', '해요', '같은', '어떤', '정말', '너무',
+  '이거', '저거', '그거', '해서', '대한', '위한', '근데', '아니', '그냥', '진짜', '왜냐',
+  '어떻게', '요즘', '좀', '제발', '사진', '영상', '우리개', '아가', '만약', '때문', '아직',
+  '오늘', '내일', '어제', '나는', '여기', '거기', '저기', '하나', '이게', '그래', '이미',
+  '이제', '아마', '원래', '다시', '그래서', '그런', '이번', '확인', '얘기', '다른',
+  '혹시', 'ㅋㅋ', 'ㅎㅎ', '감사', '답변', '글쓰기', '검색', '제목', '작성', '수정',
+  '삭제', '등록', '로그인', '회원', '카페', '블로그', '네이버', '다음', '구글',
+  '갤러리', '공지', '이벤트', '댓글', '조회', '추천수', '스크랩', '공유', '신고',
+  // 일반 동물 단어 (너무 흔해서 키워드로 무의미)
+  '강아지', '고양이', '반려동물', '반려견', '반려묘', '멍멍이', '냥이', '펫',
+]);
+
+const STOPWORDS_EN = new Set([
+  'the', 'and', 'for', 'this', 'that', 'with', 'from', 'have', 'has', 'her', 'his',
+  'she', 'him', 'they', 'them', 'was', 'were', 'are', 'been', 'being', 'not', 'but',
+  'all', 'can', 'had', 'just', 'got', 'get', 'how', 'our', 'out', 'about', 'what',
+  'when', 'who', 'which', 'will', 'would', 'could', 'should', 'does', 'did', 'its',
+  'any', 'your', 'you', 'cat', 'dog', 'cats', 'dogs', 'pet', 'pets', 'my', 'new',
+  'one', 'like', 'now', 'day', 'back', 'after', 'over', 'some', 'very', 'why', 'much',
+  'too', 'also', 'than', 'other', 'more', 'most', 'into', 'here', 'there',
+  // 쓰레기 키워드로 자주 유입되는 영어 단어
+  'year', 'years', 'old', 'months', 'month', 'week', 'weeks', 'help', 'need',
+  'please', 'anyone', 'someone', 'every', 'really', 'still', 'never', 'always',
+  'think', 'know', 'want', 'look', 'make', 'time', 'good', 'best', 'first',
+  'last', 'long', 'only', 'come', 'take', 'thing', 'things', 'people', 'way',
+  'said', 'each', 'tell', 'many', 'well', 'then', 'them', 'same', 'right',
+  'going', 'been', 'made', 'sure', 'keep', 'even', 'give', 'went', 'doing',
+]);
+
+// ── 반려동물 주제 카테고리 ──
+const PET_TOPIC_CATEGORIES = [
+  // 사료/영양
+  '사료', '간식', '영양', '그레인프리', '생식', '습식', '건식', '단백질', '첨가물', '급여', '급식', '먹이', '배식',
+  'food', 'diet', 'nutrition', 'kibble', 'treat', 'raw', 'feeding',
+  // 건강/질병
+  '건강', '질병', '병원', '수의사', '진료', '예방접종', '접종', '백신', '중성화', '수술',
+  '알러지', '알레르기', '피부', '소화', '설사', '구토', '비만', '다이어트', '체중',
+  '위장', '장염', '관절', '디스크', '슬개골', '심장', '신장', '간', '췌장', '당뇨',
+  '암', '종양', '결석', '방광', '요도', '귀염증', '외이염', '피부병', '탈모', '아토피',
+  '구내염', '치석', '치주', '눈물', '눈곱', '기침', '감기', '켄넬코프', '범백', '파보',
+  '코로나', '디스템퍼', '광견병', '기생충', '벼룩', '진드기', '심장사상충', '회충',
+  'health', 'disease', 'vet', 'allergy', 'skin', 'weight', 'obesity', 'cancer',
+  // 행동/훈련
+  '훈련', '교육', '짖음', '분리불안', '공격성', '물림', '마킹', '배변', '대소변',
+  '산책', '사회화', '복종', '클리커', '긍정강화', '행동교정', '스트레스',
+  'training', 'behavior', 'anxiety', 'aggression', 'barking', 'socialization',
+  // 품종/종류
+  '품종', '믹스', '유기견', '유기묘', '입양', '분양', '브리더',
+  '푸들', '말티즈', '치와와', '시츄', '비숑', '골든', '래브라도', '허스키', '진돗개', '시바',
+  '코숏', '러시안블루', '페르시안', '브리티시', '스코티시', '랙돌', '벵갈', '샴',
+  'breed', 'adoption', 'rescue', 'shelter', 'poodle', 'retriever',
+  // 용품/관리
+  '용품', '장난감', '하네스', '목줄', '리드줄', '캐리어', '케이지', '울타리',
+  '미용', '목욕', '빗질', '발톱', '이빨', '양치', '그루밍', '샴푸',
+  '보험', '펫보험', '동물병원', '약', '처방',
+  // 생활
+  '동거', '합사', '다묘', '다견', '고양이카페', '펫시터', '호텔', '위탁',
+  '임보', '봉사', '동물보호', '학대', '유실', '실종', '칩', '등록',
+];
+
+const PET_TOPIC_SET = new Set(PET_TOPIC_CATEGORIES.map(w => w.toLowerCase()));
+
+/**
+ * 키워드가 반려동물 관련 주제인지 확인
+ */
+function isPetRelated(keyword) {
+  const lower = keyword.toLowerCase();
+  // 정확 매칭
+  if (PET_TOPIC_SET.has(lower)) return true;
+  // 부분 매칭: 키워드가 카테고리 단어를 포함하거나, 카테고리 단어가 키워드를 포함
+  for (const topic of PET_TOPIC_CATEGORIES) {
+    const t = topic.toLowerCase();
+    if (lower.includes(t) || t.includes(lower)) return true;
+  }
+  return false;
+}
+
 function extractKeywords(posts) {
   const freq = {};
 
@@ -53,12 +134,12 @@ function extractKeywords(posts) {
     const words = (post.title + ' ' + (post.body || '').slice(0, 200))
       .match(/[가-힣]{2,}|[a-zA-Z]{3,}/g) || [];
 
-    // 불용어 제거
-    const stopwords = new Set(['있는', '하는', '되는', '그리고', '이런', '저런', '우리', '강아지', '고양이', '질문', '추천', '부탁', '합니다', '입니다', '네요', '있어요', '없어요', '해요', '같은', '어떤', '정말', '너무', '이거', '저거', '그거', '해서', '대한', '위한', '근데', '아니', '그냥', '진짜', '왜냐', '어떻게', '요즘', '좀', '제발', '사진', '영상', '우리개', '아가', '만약', '때문', '아직', '오늘', '내일', '어제', '나는', '여기', '거기', '저기', '하나', '이게', '그래', '이미', '이제', '아마', '아직', '원래', '다시', '그래서', '그런', '이번', '확인', '얘기', '다른', 'the', 'and', 'for', 'this', 'that', 'with', 'from', 'have', 'has', 'her', 'his', 'she', 'him', 'they', 'them', 'was', 'were', 'are', 'been', 'being', 'not', 'but', 'all', 'can', 'had', 'just', 'got', 'get', 'how', 'our', 'out', 'about', 'what', 'when', 'who', 'which', 'will', 'would', 'could', 'should', 'does', 'did', 'been', 'its', 'any', 'your', 'you', 'cat', 'dog', 'cats', 'dogs', 'pet', 'pets', 'my', 'new', 'one', 'like', 'now', 'day', 'back', 'after', 'over', 'some', 'very', 'why', 'much', 'too', 'also', 'than', 'other', 'more', 'most', 'into', 'here', 'there']);
-
     for (const w of words) {
-      if (stopwords.has(w)) continue;
+      // 불용어 필터링
+      if (STOPWORDS_KO.has(w) || STOPWORDS_EN.has(w.toLowerCase())) continue;
       if (isBannedKeyword(w)) continue;
+      // 2글자 한글은 반려동물 관련인지 확인 (너무 일반적인 단어 차단)
+      if (/^[가-힣]{2}$/.test(w) && !isPetRelated(w)) continue;
       if (!freq[w]) freq[w] = { count: 0, posts: [] };
       freq[w].count++;
       if (freq[w].posts.length < 5) freq[w].posts.push(post);
@@ -208,6 +289,16 @@ export async function runScoring() {
       sampleQuestions: JSON.stringify(questions),
     });
   }
+
+  // 반려동물 주제 필터: 클러스터 내 키워드 중 하나라도 반려동물 관련이어야 함
+  results = results.filter(r => {
+    const clusterWords = r.cluster.split(',').map(s => s.trim());
+    const hasPetTopic = clusterWords.some(w => isPetRelated(w));
+    if (!hasPetTopic) {
+      console.log(`[scorer] ❌ "${r.keyword}" — 반려동물 주제 아님, 제외`);
+    }
+    return hasPetTopic;
+  });
 
   // DB INSERT
   const insert = db.prepare(`
