@@ -1,20 +1,4 @@
 {
   "buildCommand": "",
-  "outputDirectory": "public",
-  "env": {
-    "SUPABASE_URL": "@supabase-url",
-    "SUPABASE_ANON_KEY": "@supabase-anon-key"
-  },
-  "rewrites": [
-    { "source": "/api/optimize/ab-tests", "destination": "/api/optimize/ab-tests" },
-    { "source": "/api/optimize/rules", "destination": "/api/optimize/rules" },
-    { "source": "/api/cta-summary", "destination": "/api/cta-summary" },
-    { "source": "/api/pipeline", "destination": "/api/pipeline" },
-    { "source": "/api/trending", "destination": "/api/trending" },
-    { "source": "/api/contents", "destination": "/api/contents" },
-    { "source": "/api/performance", "destination": "/api/performance" },
-    { "source": "/api/team", "destination": "/api/team" },
-    { "source": "/api/stats", "destination": "/api/stats" },
-    { "source": "/api/funnel", "destination": "/api/funnel" }
-  ]
+  "outputDirectory": "public"
 }

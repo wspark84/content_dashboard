@@ -368,12 +368,14 @@
         el.innerHTML = ''; empty.classList.remove('hidden'); return;
       }
       empty.classList.add('hidden');
+      const clickRate = f.impressions ? (f.clicks / f.impressions * 100).toFixed(1) : 0;
+      const ctaRate = f.clicks ? (f.cta_clicks / f.clicks * 100).toFixed(1) : 0;
+      const convRate = f.cta_clicks ? (f.conversions / f.cta_clicks * 100).toFixed(1) : 0;
       const stages = [
         { label: '노출', value: f.impressions, color: '#38bdf8' },
-        { label: '클릭', value: f.clicks, color: '#a78bfa', rate: f.conversionRates?.clickRate },
-        { label: '관심(CTA)', value: f.interest, color: '#eab308', rate: f.conversionRates?.interestRate },
-        { label: '상담', value: f.consultations, color: '#22c55e', rate: f.conversionRates?.consultRate },
-        { label: '구매', value: f.purchases, color: '#ef4444', rate: f.conversionRates?.purchaseRate },
+        { label: '클릭', value: f.clicks, color: '#a78bfa', rate: clickRate },
+        { label: 'CTA 클릭', value: f.cta_clicks, color: '#eab308', rate: ctaRate },
+        { label: '전환', value: f.conversions, color: '#22c55e', rate: convRate },
       ];
       const max = Math.max(...stages.map(s => s.value), 1);
       el.innerHTML = stages.map(s => `
@@ -391,7 +393,15 @@
 
     // Pipeline Status
     async function loadPipeline() {
-      const data = await api('/api/pipeline');
+      const { data: rawData } = await sb.from('contents').select('id, title, type, status, created_at, published_at').order('created_at', { ascending: false }).limit(50);
+      // Group by status+type
+      const groups = {};
+      (rawData || []).forEach(r => {
+        const key = `${r.status}|${r.type||''}`;
+        if (!groups[key]) groups[key] = { status: r.status, type: r.type || '', cnt: 0 };
+        groups[key].cnt++;
+      });
+      const data = Object.values(groups);
       const el = document.getElementById('pipeline-status');
       const empty = document.getElementById('pipeline-empty');
       if (!Array.isArray(data) || !data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); updatePipelineSummary([]); return; }
@@ -435,15 +445,9 @@
       const btn = document.getElementById('btn-confirm-run');
       const result = document.getElementById('run-result');
       btn.disabled = true; btn.textContent = '실행중...';
-      const res = await apiPost('/api/pipeline/run');
       result.classList.remove('hidden');
-      if (res.ok) {
-        result.className = 'text-sm mb-4 p-3 rounded-lg bg-green-900/30 text-green-400';
-        result.textContent = '✅ 파이프라인 실행이 시작되었습니다.';
-      } else {
-        result.className = 'text-sm mb-4 p-3 rounded-lg bg-red-900/30 text-red-400';
-        result.textContent = `❌ ${res.error || '파이프라인 실행 API가 아직 구현되지 않았습니다 (스텁)'}`;
-      }
+      result.className = 'text-sm mb-4 p-3 rounded-lg bg-yellow-900/30 text-yellow-400';
+      result.textContent = '⚠️ 파이프라인 수동 실행은 서버 환경에서만 가능합니다. 대시보드는 읽기 전용입니다.';
       btn.disabled = false; btn.textContent = '실행';
     }
 
