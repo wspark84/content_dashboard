@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script>tailwind.config={theme:{extend:{colors:{bg:'#0f172a',card:'#1e293b',accent:'#38bdf8',green:'#22c55e',red:'#ef4444',yellow:'#eab308',purple:'#a78bfa'}}}}</script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3/dist/jszip.min.js"></script>
   <style>
     body { background: #0f172a; color: #e2e8f0; font-family: 'Pretendard', -apple-system, sans-serif; }
     .card { background: #1e293b; border-radius: 12px; border: 1px solid #334155; }
@@ -16,6 +17,11 @@
     .badge-approved { background: #14532d33; color: #22c55e; }
     .badge-published { background: #1e3a5f33; color: #38bdf8; }
     .badge-failed { background: #7f1d1d33; color: #ef4444; }
+    .badge-pending { background: #854d0e33; color: #eab308; }
+    .badge-selected { background: #14532d33; color: #22c55e; }
+    .badge-generated { background: #1e3a5f33; color: #38bdf8; }
+    .badge-generating { background: #a78bfa33; color: #a78bfa; }
+    .badge-rejected { background: #7f1d1d33; color: #ef4444; }
     .btn { padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: .15s; border: none; }
     .btn:hover { filter: brightness(1.2); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -23,9 +29,21 @@
     .btn-reject { background: #ef4444; color: #fff; }
     .btn-primary { background: #38bdf8; color: #0f172a; }
     .btn-run { background: linear-gradient(135deg, #22c55e, #38bdf8); color: #0f172a; font-weight: 700; }
+    .btn-brown { background: #8B7355; color: #fff; }
+    .btn-download { background: #22c55e; color: #fff; }
     .pulse { animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
     ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    .tab-btn { padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: .15s; }
+    .tab-btn.active { background: #38bdf8; color: #0f172a; }
+    .tab-btn:not(.active) { background: #334155; color: #94a3b8; }
+    .tab-btn:hover:not(.active) { background: #475569; }
+    .cn-idea-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; }
+    .cn-idea-card:hover { border-color: #8B7355; }
+    .cn-grid img { border-radius: 8px; cursor: pointer; transition: transform .2s; }
+    .cn-grid img:hover { transform: scale(1.05); }
+    .score-bar { height: 6px; border-radius: 3px; background: #334155; }
+    .score-fill { height: 6px; border-radius: 3px; background: linear-gradient(90deg, #8B7355, #D4A574); }
   </style>
 </head>
 <body class="min-h-screen">
@@ -53,7 +71,16 @@
     </div>
   </header>
 
-  <main class="p-4 sm:p-6 max-w-[1400px] mx-auto space-y-6">
+  <!-- Navigation Tabs -->
+  <nav class="border-b border-slate-700 px-4 sm:px-6">
+    <div class="max-w-[1400px] mx-auto flex gap-2 py-3">
+      <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active">📊 대시보드</button>
+      <button onclick="switchTab('cardnews')" id="tab-cardnews" class="tab-btn">🎨 카드뉴스</button>
+    </div>
+  </nav>
+
+  <!-- Dashboard Tab -->
+  <main id="page-dashboard" class="p-4 sm:p-6 max-w-[1400px] mx-auto space-y-6">
     <!-- Stats Row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4" id="stat-cards">
       <div class="card p-4"><div class="text-slate-400 text-xs sm:text-sm">총 콘텐츠</div><div class="text-xl sm:text-2xl font-bold mt-1" id="s-total">-</div></div>
@@ -128,6 +155,41 @@
       </div>
     </div>
   </main>
+
+  <!-- Cardnews Tab -->
+  <main id="page-cardnews" class="p-4 sm:p-6 max-w-[1400px] mx-auto space-y-6 hidden">
+    <!-- Ideas Section -->
+    <div class="card p-5" style="border-color: #8B735555;">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg">💡 카드뉴스 아이디어 제안</h2>
+        <div class="flex gap-2">
+          <button onclick="loadCardnewsIdeas('pending')" class="btn btn-brown text-xs">대기중</button>
+          <button onclick="loadCardnewsIdeas('selected')" class="btn bg-slate-700 text-slate-300 text-xs">선택됨</button>
+          <button onclick="loadCardnewsIdeas('generating')" class="btn bg-slate-700 text-slate-300 text-xs">생성중</button>
+        </div>
+      </div>
+      <div id="cn-ideas-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <div id="cn-ideas-empty" class="text-slate-500 text-sm text-center py-8 hidden">아이디어가 없습니다</div>
+    </div>
+
+    <!-- Generated Results -->
+    <div class="card p-5" style="border-color: #8B735555;">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg">🖼️ 생성된 카드뉴스</h2>
+        <button onclick="downloadAllCards()" id="btn-download-all" class="btn btn-download text-xs hidden">📦 전체 다운로드 (ZIP)</button>
+      </div>
+      <div id="cn-outputs-list" class="space-y-6"></div>
+      <div id="cn-outputs-empty" class="text-slate-500 text-sm text-center py-8">생성된 카드뉴스가 없습니다</div>
+    </div>
+  </main>
+
+  <!-- Cardnews Image Modal -->
+  <div id="cn-image-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+    <div class="relative">
+      <img id="cn-modal-img" src="" class="max-w-[90vw] max-h-[90vh] rounded-lg shadow-2xl">
+      <a id="cn-modal-download" href="" download class="absolute top-4 right-4 btn btn-download">⬇ 다운로드</a>
+    </div>
+  </div>
 
   <!-- Content Detail Modal -->
   <div id="content-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden" onclick="if(event.target===this)closeContentModal()">
@@ -496,6 +558,123 @@
 
     // XSS escape
     function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+    // === Tab Navigation ===
+    function switchTab(tab) {
+      document.getElementById('page-dashboard').classList.toggle('hidden', tab !== 'dashboard');
+      document.getElementById('page-cardnews').classList.toggle('hidden', tab !== 'cardnews');
+      document.getElementById('tab-dashboard').classList.toggle('active', tab === 'dashboard');
+      document.getElementById('tab-cardnews').classList.toggle('active', tab === 'cardnews');
+      if (tab === 'cardnews') { loadCardnewsIdeas('pending'); loadCardnewsOutputs(); }
+    }
+
+    // === Cardnews Ideas ===
+    async function loadCardnewsIdeas(status = 'pending') {
+      const { data, error } = await sb.from('cardnews_ideas').select('*').eq('status', status).order('viral_score', { ascending: false });
+      const list = data || [];
+      const el = document.getElementById('cn-ideas-list');
+      const empty = document.getElementById('cn-ideas-empty');
+      if (!list.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      const catIcons = { '건강':'💊', '사료':'🍖', '행동':'🐕', '이슈':'📢', '감동':'💕', '꿀팁':'💡' };
+      el.innerHTML = list.map(idea => `
+        <div class="cn-idea-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm">${catIcons[idea.category] || '📋'} <span class="text-slate-400">${esc(idea.category || '기타')}</span></span>
+            <span class="badge badge-${idea.status}">${idea.status}</span>
+          </div>
+          <h3 class="font-bold text-base mb-2">${esc(idea.title)}</h3>
+          <p class="text-sm text-slate-400 mb-3 line-clamp-2">${esc(idea.description || '')}</p>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs text-slate-500">바이럴</span>
+            <div class="score-bar flex-1"><div class="score-fill" style="width:${idea.viral_score || 0}%"></div></div>
+            <span class="text-xs font-bold" style="color:#D4A574">${idea.viral_score || 0}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-600">${esc(idea.source || '')}</span>
+            <div class="flex gap-2">
+              ${idea.status === 'pending' ? `
+                <button onclick="updateIdeaStatus(${idea.id},'selected')" class="btn btn-approve text-xs">✓ 선택</button>
+                <button onclick="updateIdeaStatus(${idea.id},'rejected')" class="btn btn-reject text-xs">✕ 거절</button>
+              ` : idea.status === 'selected' ? `
+                <button onclick="triggerGenerate(${idea.id})" class="btn btn-brown text-xs">🎨 생성</button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function updateIdeaStatus(id, status) {
+      await sb.from('cardnews_ideas').update({ status }).eq('id', id);
+      loadCardnewsIdeas(status === 'rejected' ? 'pending' : status);
+    }
+
+    async function triggerGenerate(ideaId) {
+      await sb.from('cardnews_ideas').update({ status: 'generating' }).eq('id', ideaId);
+      alert('카드뉴스 생성이 트리거되었습니다. OpenClaw 크론잡이 처리합니다.');
+      loadCardnewsIdeas('selected');
+    }
+
+    // === Cardnews Outputs ===
+    let allOutputs = [];
+    async function loadCardnewsOutputs() {
+      const { data } = await sb.from('cardnews_outputs').select('*, cardnews_ideas(title, category)').order('idea_id', { ascending: false }).order('card_number', { ascending: true });
+      allOutputs = data || [];
+      const el = document.getElementById('cn-outputs-list');
+      const empty = document.getElementById('cn-outputs-empty');
+      const dlBtn = document.getElementById('btn-download-all');
+      if (!allOutputs.length) { el.innerHTML = ''; empty.classList.remove('hidden'); dlBtn.classList.add('hidden'); return; }
+      empty.classList.add('hidden');
+      dlBtn.classList.remove('hidden');
+
+      // Group by idea_id
+      const groups = {};
+      allOutputs.forEach(o => {
+        if (!groups[o.idea_id]) groups[o.idea_id] = { idea: o.cardnews_ideas, cards: [] };
+        groups[o.idea_id].cards.push(o);
+      });
+
+      el.innerHTML = Object.entries(groups).map(([ideaId, g]) => `
+        <div class="p-4 rounded-lg bg-slate-800/50">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold">${esc(g.idea?.title || '카드뉴스 #' + ideaId)}</h3>
+            <span class="text-xs text-slate-500">${g.cards.length}장</span>
+          </div>
+          <div class="cn-grid grid grid-cols-4 gap-3">
+            ${g.cards.map(c => `
+              <div class="relative group">
+                <img src="${esc(c.image_url)}" alt="카드 ${c.card_number}" class="w-full aspect-[4/5] object-cover rounded-lg" onclick="openCardImage('${esc(c.image_url)}')">
+                <div class="absolute bottom-0 left-0 right-0 bg-black/60 rounded-b-lg px-2 py-1 text-xs truncate">${esc(c.title_text || '')}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openCardImage(url) {
+      document.getElementById('cn-modal-img').src = url;
+      document.getElementById('cn-modal-download').href = url;
+      document.getElementById('cn-image-modal').classList.remove('hidden');
+    }
+
+    async function downloadAllCards() {
+      if (!allOutputs.length) return;
+      const zip = new JSZip();
+      for (const card of allOutputs) {
+        try {
+          const resp = await fetch(card.image_url);
+          const blob = await resp.blob();
+          zip.file(`card_${card.idea_id}_${card.card_number}.png`, blob);
+        } catch(e) { console.error('Download failed for card', card.id, e); }
+      }
+      const content = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(content);
+      a.download = 'cardnews.zip';
+      a.click();
+    }
 
     // Init
     async function init() {
