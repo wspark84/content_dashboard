@@ -129,6 +129,24 @@
     </div>
   </main>
 
+  <!-- Content Detail Modal -->
+  <div id="content-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden" onclick="if(event.target===this)closeContentModal()">
+    <div class="card p-6 w-full max-w-2xl mx-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <span id="cm-badge" class="badge"></span>
+          <span id="cm-type" class="text-xs text-slate-500"></span>
+        </div>
+        <button onclick="closeContentModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+      </div>
+      <h3 id="cm-title" class="font-bold text-lg mb-3"></h3>
+      <div id="cm-meta" class="text-xs text-slate-500 mb-3 flex gap-4"></div>
+      <div id="cm-body" class="flex-1 overflow-y-auto text-sm text-slate-300 leading-relaxed mb-4 whitespace-pre-wrap border border-slate-700 rounded-lg p-4 bg-slate-900/50" style="max-height:50vh"></div>
+      <div id="cm-tags" class="mb-4"></div>
+      <div id="cm-actions" class="flex gap-3 justify-end"></div>
+    </div>
+  </div>
+
   <!-- Pipeline Run Modal -->
   <div id="run-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
     <div class="card p-6 w-full max-w-md mx-4">
@@ -298,27 +316,52 @@
       if (!list.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
       el.innerHTML = list.map(c => `
-        <div class="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="badge badge-${c.status}">${statusLabel(c.status)}</span>
-              <span class="text-xs text-slate-500">${esc(c.type || '')}</span>
+        <div class="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition cursor-pointer" onclick="openContentDetail(${c.id})">
+          <div class="flex items-center justify-between">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="badge badge-${c.status}">${statusLabel(c.status)}</span>
+                <span class="text-xs text-slate-500">${esc(c.type || '')}</span>
+              </div>
+              <div class="font-medium text-sm mt-1 truncate">${esc(c.title || '(제목 없음)')}</div>
+              <div class="text-xs text-slate-500 mt-0.5">${c.created_at || ''}</div>
             </div>
-            <div class="font-medium text-sm mt-1 truncate">${esc(c.title || '(제목 없음)')}</div>
-            <div class="text-xs text-slate-500 mt-0.5">${c.created_at || ''}</div>
-          </div>
-          <div class="flex gap-2 ml-3 shrink-0">
-            ${c.status === 'review' || c.status === 'draft' ? `
-              <button class="btn btn-approve" onclick="doApprove(${c.id})">승인</button>
-              <button class="btn btn-reject" onclick="doReject(${c.id})">반려</button>
-            ` : ''}
-            ${c.published_url ? `<a href="${esc(c.published_url)}" target="_blank" class="btn bg-slate-600 text-white">보기</a>` : ''}
+            <div class="text-slate-500 ml-3">▶</div>
           </div>
         </div>
       `).join('');
     }
     function statusLabel(s) {
       return { draft:'초안', review:'검수중', approved:'승인됨', published:'발행됨', failed:'실패' }[s] || s;
+    }
+    function openContentDetail(id) {
+      const c = allContents.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('cm-badge').className = `badge badge-${c.status}`;
+      document.getElementById('cm-badge').textContent = statusLabel(c.status);
+      document.getElementById('cm-type').textContent = c.type || '';
+      document.getElementById('cm-title').textContent = c.title || '(제목 없음)';
+      document.getElementById('cm-meta').innerHTML = `
+        <span>📅 ${c.created_at || ''}</span>
+        ${c.published_at ? `<span>🚀 발행: ${c.published_at}</span>` : ''}
+        ${c.trending_topics ? `<span>🔥 키워드: ${esc(c.trending_topics.keyword || '')}</span>` : ''}
+      `;
+      document.getElementById('cm-body').textContent = c.body || c.html || '(본문 없음)';
+      const tags = c.tags ? (typeof c.tags === 'string' ? JSON.parse(c.tags) : c.tags) : [];
+      document.getElementById('cm-tags').innerHTML = tags.length ? tags.map(t => `<span class="inline-block text-xs bg-slate-700 text-slate-300 rounded-full px-2 py-1 mr-1 mb-1">#${esc(t)}</span>`).join('') : '';
+      let actions = '';
+      if (c.status === 'draft' || c.status === 'review') {
+        actions = `<button class="btn btn-approve" onclick="doApprove(${c.id});closeContentModal()">승인</button>
+                   <button class="btn btn-reject" onclick="doReject(${c.id});closeContentModal()">반려</button>`;
+      }
+      if (c.published_url) {
+        actions += `<a href="${esc(c.published_url)}" target="_blank" class="btn bg-slate-600 text-white">발행글 보기</a>`;
+      }
+      document.getElementById('cm-actions').innerHTML = actions;
+      document.getElementById('content-modal').classList.remove('hidden');
+    }
+    function closeContentModal() {
+      document.getElementById('content-modal').classList.add('hidden');
     }
     async function doApprove(id) {
       await sb.from('contents').update({ status: 'approved' }).eq('id', id);
