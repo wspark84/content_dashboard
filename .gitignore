@@ -11,3 +11,4 @@ data/reports/
 !.env.example
 .DS_Store
 *.log
+.env.local

@@ -1,6 +1,10 @@
 {
   "buildCommand": "",
   "outputDirectory": "public",
+  "env": {
+    "SUPABASE_URL": "@supabase-url",
+    "SUPABASE_ANON_KEY": "@supabase-anon-key"
+  },
   "rewrites": [
     { "source": "/api/optimize/ab-tests", "destination": "/api/optimize/ab-tests" },
     { "source": "/api/optimize/rules", "destination": "/api/optimize/rules" },
