@@ -142,8 +142,11 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
-    const API = '';
+    const SUPABASE_URL = 'https://gznarqkmuafkxotljfzu.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6bmFycWttdWFma3hvdGxqZnp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1Njc0NDIsImV4cCI6MjA4ODE0MzQ0Mn0.LJOomQJRuNNDbl1kc9IHkYLfV4sZR_xcwylnl9fXgP8';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Clock
     function updateClock() {
@@ -152,23 +155,31 @@
     }
     updateClock(); setInterval(updateClock, 30000);
 
-    // Fetch helpers
-    async function api(path) {
-      try { return (await fetch(API + path)).json(); } catch { return []; }
-    }
-    async function apiPost(path, body={}) {
-      try { return (await fetch(API + path, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })).json(); }
-      catch { return { ok: false, error: 'Network error' }; }
-    }
-
     // Stats
     async function loadStats() {
-      const [stats, perf] = await Promise.all([api('/api/stats'), api('/api/performance?days=30')]);
-      document.getElementById('s-total').textContent = (stats.total || 0).toLocaleString();
-      document.getElementById('s-today').textContent = stats.todayPublished || 0;
-      document.getElementById('s-views').textContent = (perf.totals?.total_views || 0).toLocaleString();
-      document.getElementById('s-conv').textContent = (perf.totals?.total_conversions || 0).toLocaleString();
-      return perf;
+      try {
+        const [
+          { count: total },
+          { count: todayPublished },
+          { data: perfDaily }
+        ] = await Promise.all([
+          sb.from('contents').select('*', { count: 'exact', head: true }),
+          sb.from('contents').select('*', { count: 'exact', head: true }).eq('status', 'published').gte('published_at', new Date().toISOString().slice(0, 10)),
+          sb.from('performance').select('*').order('date', { ascending: false }).limit(30)
+        ]);
+        const daily = perfDaily || [];
+        const totals = daily.reduce((acc, r) => ({
+          total_views: acc.total_views + (r.views || 0),
+          total_clicks: acc.total_clicks + (r.clicks || 0),
+          total_conversions: acc.total_conversions + (r.conversions || 0),
+        }), { total_views: 0, total_clicks: 0, total_conversions: 0 });
+
+        document.getElementById('s-total').textContent = (total || 0).toLocaleString();
+        document.getElementById('s-today').textContent = todayPublished || 0;
+        document.getElementById('s-views').textContent = totals.total_views.toLocaleString();
+        document.getElementById('s-conv').textContent = totals.total_conversions.toLocaleString();
+        return { daily, totals };
+      } catch(e) { console.error('loadStats', e); return { daily: [], totals: {} }; }
     }
 
     // Performance Chart
@@ -202,7 +213,8 @@
 
     // Trending
     async function loadTrending() {
-      const data = await api('/api/trending');
+      const { data: rawData } = await sb.from('trending_topics').select('*').order('score', { ascending: false }).limit(50);
+      const data = rawData || [];
       const el = document.getElementById('trending-list');
       const empty = document.getElementById('trending-empty');
       if (!data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
@@ -225,7 +237,8 @@
 
     // A/B Tests
     async function loadABTests() {
-      const data = await api('/api/optimize/ab-tests');
+      const { data: rawData } = await sb.from('ab_tests').select('*').order('started_at', { ascending: false }).limit(20);
+      const data = rawData || [];
       const el = document.getElementById('ab-list');
       const empty = document.getElementById('ab-empty');
       if (!Array.isArray(data) || !data.length) { el.innerHTML = ''; empty.style.display = ''; return; }
@@ -250,7 +263,8 @@
 
     // Learned Rules
     async function loadRules() {
-      const data = await api('/api/optimize/rules');
+      const { data: rawData } = await sb.from('learned_rules').select('*').order('confidence', { ascending: false });
+      const data = rawData || [];
       const el = document.getElementById('rules-list');
       const empty = document.getElementById('rules-empty');
       if (!Array.isArray(data) || !data.length) { el.innerHTML = ''; empty.style.display = ''; return; }
@@ -271,8 +285,8 @@
     // Contents
     let allContents = [];
     async function loadContents() {
-      allContents = await api('/api/contents');
-      if (!Array.isArray(allContents)) allContents = [];
+      const { data: rawData } = await sb.from('contents').select('*, trending_topics(keyword)').order('created_at', { ascending: false }).limit(100);
+      allContents = rawData || [];
       renderContents(allContents);
     }
     function filterContents(status) {
@@ -306,12 +320,21 @@
     function statusLabel(s) {
       return { draft:'초안', review:'검수중', approved:'승인됨', published:'발행됨', failed:'실패' }[s] || s;
     }
-    async function doApprove(id) { await apiPost(`/api/contents/${id}/approve`); loadContents(); loadTeam(); }
-    async function doReject(id) { await apiPost(`/api/contents/${id}/reject`); loadContents(); loadTeam(); }
+    async function doApprove(id) {
+      await sb.from('contents').update({ status: 'approved' }).eq('id', id);
+      await sb.from('team_logs').insert({ action: 'approve', content_id: id, user_role: 'admin' });
+      loadContents(); loadTeam();
+    }
+    async function doReject(id) {
+      await sb.from('contents').update({ status: 'draft' }).eq('id', id);
+      await sb.from('team_logs').insert({ action: 'reject', content_id: id, user_role: 'admin' });
+      loadContents(); loadTeam();
+    }
 
     // Team
     async function loadTeam() {
-      const data = await api('/api/team?limit=30');
+      const { data: rawData } = await sb.from('team_logs').select('*').order('created_at', { ascending: false }).limit(50);
+      const data = rawData || [];
       const el = document.getElementById('team-list');
       const empty = document.getElementById('team-empty');
       if (!Array.isArray(data) || !data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
@@ -332,11 +355,16 @@
 
     // Funnel
     async function loadFunnel() {
-      const data = await api('/api/funnel?days=30');
+      const { data: rows } = await sb.from('performance').select('*').order('date', { ascending: false }).limit(30);
       const el = document.getElementById('funnel-bars');
       const empty = document.getElementById('funnel-empty');
-      const f = data.funnel;
-      if (!f || (f.impressions === 0 && f.clicks === 0)) {
+      const f = (rows || []).reduce((acc, r) => ({
+        impressions: acc.impressions + (r.views || 0),
+        clicks: acc.clicks + (r.clicks || 0),
+        cta_clicks: acc.cta_clicks + (r.cta_clicks || 0),
+        conversions: acc.conversions + (r.conversions || 0),
+      }), { impressions: 0, clicks: 0, cta_clicks: 0, conversions: 0 });
+      if (f.impressions === 0 && f.clicks === 0) {
         el.innerHTML = ''; empty.classList.remove('hidden'); return;
       }
       empty.classList.add('hidden');
