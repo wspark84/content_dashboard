@@ -1,0 +1,233 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "created": "2026-03-09",
+    "totalTopics": 0,
+    "sources": {
+      "veterinary": {
+        "notebook": "VET_Pet_care (6006a9b2)",
+        "pdfs": ["소동물 임상영양학", "좋은사료선택강좌", "WSAVA 치과 지침", "IRIS 포켓 가이드", "EU 사료 규정(CELEX)", "고양이 행동 상담 가이드", "전문 매뉴얼 영양학 2024-2025", "아이리스 포켓 가이드", "내 강아지를 도와주는 사전", "삐뽀삐뽀 애완견 대백과", "고양이 특수 대도감"]
+      },
+      "behavior": {
+        "notebook": "강아지 고양이 행동분석학 (5176c681)",
+        "pdfs": ["고객 교육 매뉴얼", "고양이 조기 훈련 클릭커 트레이닝", "개훈련101", "고양이 행동 1~4", "개 행동 1~3"]
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": "vet",
+      "name": "수의학",
+      "icon": "🏥",
+      "subcategories": [
+        {
+          "id": "vet-nutrition",
+          "name": "영양학",
+          "icon": "🥗",
+          "source": "VET_Pet_care",
+          "topics": [
+            {"id": "vn001", "title": "6대 필수 영양소의 역할과 균형", "description": "단백질, 지방, 탄수화물, 비타민, 미네랄, 수분의 기능과 적정 비율. 각 영양소가 부족하거나 과잉일 때 나타나는 증상.", "tags": ["기초영양", "필수영양소"], "animal": "both", "difficulty": "basic", "viralScore": 65},
+            {"id": "vn002", "title": "단백질의 질: 아미노산 스코어와 생물가", "description": "모든 단백질이 같지 않다. 필수 아미노산 10종(개)과 11종(고양이)의 차이, 동물성 vs 식물성 단백질의 소화율 비교.", "tags": ["단백질", "아미노산", "소화율"], "animal": "both", "difficulty": "advanced", "viralScore": 72},
+            {"id": "vn003", "title": "고양이는 진정한 육식동물: 타우린의 비밀", "description": "고양이가 타우린을 합성하지 못하는 이유, 타우린 결핍 시 확장성 심근병증(DCM)과 망막변성 발생 메커니즘.", "tags": ["타우린", "고양이", "필수아미노산"], "animal": "cat", "difficulty": "advanced", "viralScore": 85},
+            {"id": "vn004", "title": "강아지 성장기 칼슘-인 비율의 중요성", "description": "대형견 성장기 과잉 칼슘이 골격 이상(OCD, HOD)을 유발하는 메커니즘. 이상적 Ca:P 비율 1.2:1~1.4:1.", "tags": ["칼슘", "인", "성장기", "대형견"], "animal": "dog", "difficulty": "advanced", "viralScore": 78},
+            {"id": "vn005", "title": "오메가-3 vs 오메가-6: 염증과 항염증의 균형", "description": "EPA/DHA의 항염증 효과, 아라키돈산의 역할, 피부/관절/뇌 건강에 미치는 지방산 비율.", "tags": ["오메가3", "오메가6", "지방산", "항염증"], "animal": "both", "difficulty": "intermediate", "viralScore": 80},
+            {"id": "vn006", "title": "수분 섭취량 계산법과 탈수 징후", "description": "체중 kg당 필요 수분량, 건식 vs 습식 사료의 수분 함량 차이, 피부 탄력 테스트로 탈수 확인.", "tags": ["수분", "탈수", "급수"], "animal": "both", "difficulty": "basic", "viralScore": 70},
+            {"id": "vn007", "title": "비타민A 과잉독성: 간 급여의 위험성", "description": "고양이 간 과다 섭취 시 경추 강직증(Cervical Spondylosis) 발생. 비타민A 축적 독성의 임상 증상.", "tags": ["비타민A", "간", "독성", "고양이"], "animal": "cat", "difficulty": "advanced", "viralScore": 82},
+            {"id": "vn008", "title": "탄수화물 논쟁: 개에게 곡물이 필요한가?", "description": "그레인프리 사료 논란, FDA의 DCM 경고, 곡물 알러지의 실제 발생률(1% 미만), 탄수화물의 에너지원 역할.", "tags": ["곡물", "그레인프리", "DCM", "알러지"], "animal": "dog", "difficulty": "intermediate", "viralScore": 92},
+            {"id": "vn009", "title": "나이별 영양 요구량 변화 (생애주기 영양학)", "description": "성장기/유지기/노령기/임신수유기별 칼로리, 단백질, 지방 요구량 차이와 사료 전환 시기.", "tags": ["생애주기", "영양요구량", "나이별"], "animal": "both", "difficulty": "intermediate", "viralScore": 75},
+            {"id": "vn010", "title": "BCS(체형점수) 판정법: 1~9점 척도", "description": "갈비뼈 촉진, 허리라인 관찰, 복부 접힘으로 비만도 판정. 이상적 점수 4~5/9.", "tags": ["비만", "체형점수", "BCS"], "animal": "both", "difficulty": "basic", "viralScore": 77},
+            {"id": "vn011", "title": "소화율(Digestibility)이란 무엇인가", "description": "겉보기 소화율 vs 진정 소화율, 사료 품질 판단 기준으로서의 소화율, 대변 상태로 추정하는 법.", "tags": ["소화율", "사료품질"], "animal": "both", "difficulty": "intermediate", "viralScore": 68},
+            {"id": "vn012", "title": "프로바이오틱스와 장건강: 마이크로바이옴의 역할", "description": "장내 세균총 균형, 프로바이오틱스/프리바이오틱스 차이, 항생제 후 장건강 회복.", "tags": ["프로바이오틱스", "장건강", "마이크로바이옴"], "animal": "both", "difficulty": "intermediate", "viralScore": 83},
+            {"id": "vn013", "title": "섬유질의 두 얼굴: 수용성 vs 불용성", "description": "수용성 섬유질(펙틴, 이눌린)의 프리바이오틱 효과, 불용성 섬유질의 장운동 촉진, 비만/당뇨 관리에서의 활용.", "tags": ["섬유질", "프리바이오틱", "장건강"], "animal": "both", "difficulty": "intermediate", "viralScore": 65},
+            {"id": "vn014", "title": "항산화 영양소: 노화를 늦추는 식이전략", "description": "비타민E, 비타민C, 셀레늄, 카로티노이드의 활성산소 제거 메커니즘과 노령동물 인지기능 보호.", "tags": ["항산화", "노화", "인지기능"], "animal": "both", "difficulty": "intermediate", "viralScore": 74},
+            {"id": "vn015", "title": "아연 결핍과 피부 문제: 허스키에 흔한 이유", "description": "아연 반응성 피모증(Zinc-responsive Dermatosis), 북방견종의 아연 흡수 장애, 보충 방법.", "tags": ["아연", "피부", "허스키", "미네랄"], "animal": "dog", "difficulty": "advanced", "viralScore": 79},
+            {"id": "vn016", "title": "물 마시기 싫어하는 고양이: 수분 섭취 전략", "description": "고양이의 사막 조상 기원, 낮은 갈증 본능, 급수기 종류별 효과, 습식사료 병행의 중요성.", "tags": ["수분섭취", "급수기", "고양이"], "animal": "cat", "difficulty": "basic", "viralScore": 88},
+            {"id": "vn017", "title": "대사 에너지(ME) 계산법과 칼로리 관리", "description": "RER(기초대사량)과 DER(일일에너지요구량) 계산 공식, 중성화/비만/활동량별 보정계수.", "tags": ["칼로리", "대사에너지", "급여량"], "animal": "both", "difficulty": "advanced", "viralScore": 60},
+            {"id": "vn018", "title": "구리 축적 간질환: 베들링턴 테리어의 유전적 취약성", "description": "구리 대사 이상으로 인한 간경변, 구리 제한 식이의 필요성, 유전자 검사의 중요성.", "tags": ["구리", "간질환", "유전", "베들링턴"], "animal": "dog", "difficulty": "advanced", "viralScore": 67},
+            {"id": "vn019", "title": "고양이 간성 지질증(Hepatic Lipidosis): 절식의 위험", "description": "고양이가 2~3일만 굶어도 지방간 발생 가능. 비만묘의 급격한 다이어트가 위험한 이유.", "tags": ["간성지질증", "지방간", "절식", "비만"], "animal": "cat", "difficulty": "advanced", "viralScore": 86},
+            {"id": "vn020", "title": "수제 사료(홈메이드)의 영양 불균형 위험", "description": "연구에 따르면 온라인 수제사료 레시피 95%가 영양 불균형. 보충제 없는 수제식의 위험성.", "tags": ["수제사료", "홈메이드", "영양불균형"], "animal": "both", "difficulty": "intermediate", "viralScore": 90},
+            {"id": "vn021", "title": "생식(BARF) 다이어트: 장단점과 안전성", "description": "날고기 급여의 살모넬라/리스테리아 위험, 뼈 급여 시 장폐색 가능성, AAFCO/FEDIAF 입장.", "tags": ["생식", "BARF", "날고기", "안전성"], "animal": "both", "difficulty": "intermediate", "viralScore": 91},
+            {"id": "vn022", "title": "L-카르니틴과 심장 건강", "description": "L-카르니틴의 지방산 운반 역할, 심장 기능 보호, DCM 예방에서의 보충 효과.", "tags": ["카르니틴", "심장", "DCM"], "animal": "both", "difficulty": "advanced", "viralScore": 63},
+            {"id": "vn023", "title": "글루코사민/콘드로이틴: 관절 보호 영양소", "description": "연골 보호 메커니즘, 관절염 예방/치료에서의 효과, MSM과의 병행 급여.", "tags": ["관절", "글루코사민", "콘드로이틴"], "animal": "both", "difficulty": "intermediate", "viralScore": 76},
+            {"id": "vn024", "title": "비타민D와 칼슘 항상성", "description": "비타민D3의 칼슘 흡수 촉진, 고양이의 비타민D 합성 불능, 과잉 시 신장석회화 위험.", "tags": ["비타민D", "칼슘", "신장"], "animal": "both", "difficulty": "advanced", "viralScore": 62},
+            {"id": "vn025", "title": "EPA/DHA의 뇌 발달 촉진 효과", "description": "성장기 DHA 보충이 학습능력과 훈련성에 미치는 효과. 힐스 연구 결과.", "tags": ["DHA", "뇌발달", "학습능력"], "animal": "dog", "difficulty": "intermediate", "viralScore": 71}
+          ]
+        },
+        {
+          "id": "vet-food",
+          "name": "사료",
+          "icon": "🍖",
+          "source": "VET_Pet_care",
+          "topics": [
+            {"id": "vf001", "title": "사료 라벨 읽는 법: 원재료 목록의 함정", "description": "원재료 중량순 배치의 맹점, '닭고기'와 '닭고기 밀'의 실제 단백질 함량 차이, 수분 포함 여부.", "tags": ["사료라벨", "원재료", "성분분석"], "animal": "both", "difficulty": "basic", "viralScore": 93},
+            {"id": "vf002", "title": "원료 쪼개기(Ingredient Splitting) 꼼수", "description": "옥수수를 '옥수수 글루텐', '옥수수 분말', '옥수수 전분'으로 쪼개서 상위 노출을 피하는 마케팅 기법.", "tags": ["원료쪼개기", "마케팅", "사료성분"], "animal": "both", "difficulty": "intermediate", "viralScore": 95},
+            {"id": "vf003", "title": "AAFCO vs FEDIAF: 글로벌 사료 기준 비교", "description": "미국(AAFCO)과 유럽(FEDIAF) 사료 영양 기준의 차이점, 한국 기준과의 비교.", "tags": ["AAFCO", "FEDIAF", "사료기준"], "animal": "both", "difficulty": "advanced", "viralScore": 58},
+            {"id": "vf004", "title": "건식 사료 vs 습식 사료: 어떤 게 더 좋을까?", "description": "키블의 치석 제거 효과 진실, 습식의 수분 공급 장점, 혼합 급여 전략.", "tags": ["건식", "습식", "사료형태"], "animal": "both", "difficulty": "basic", "viralScore": 89},
+            {"id": "vf005", "title": "사료 보관법: 산화와 곰팡이 독소 예방", "description": "개봉 후 산패 속도, 지방 산화의 위험, 아플라톡신 오염 사례, 밀폐 용기 보관의 중요성.", "tags": ["사료보관", "산패", "아플라톡신"], "animal": "both", "difficulty": "basic", "viralScore": 82},
+            {"id": "vf006", "title": "보증 분석치(Guaranteed Analysis) 해독법", "description": "건물 기준(DM basis) 변환법, 조단백/조지방/조섬유/수분의 의미와 비교 방법.", "tags": ["보증분석치", "건물기준", "영양비교"], "animal": "both", "difficulty": "intermediate", "viralScore": 75},
+            {"id": "vf007", "title": "사료 알러지 vs 사료 불내증: 진단과 대응", "description": "진짜 알러지(면역반응)와 불내증(소화장애)의 차이, 제거식이법(Elimination Diet) 8~12주 프로토콜.", "tags": ["알러지", "불내증", "제거식이"], "animal": "both", "difficulty": "intermediate", "viralScore": 87},
+            {"id": "vf008", "title": "그레인프리 사료와 DCM(확장성 심근병증) 논란", "description": "FDA 경고 이후 그레인프리 사료 안전성 논쟁, 콩류/렌틸/감자의 타우린 흡수 방해 가설.", "tags": ["그레인프리", "DCM", "FDA", "타우린"], "animal": "dog", "difficulty": "advanced", "viralScore": 94},
+            {"id": "vf009", "title": "사료 리콜 역사: 2007 멜라민 파동", "description": "중국산 글루텐의 멜라민 오염으로 수천 마리 사망, 이후 규제 강화와 소비자 의식 변화.", "tags": ["리콜", "멜라민", "사료안전"], "animal": "both", "difficulty": "basic", "viralScore": 85},
+            {"id": "vf010", "title": "프리미엄 사료의 기준은 무엇인가", "description": "가격=품질이 아닌 이유, WSAVA 글로벌 영양 가이드라인의 5가지 질문, R&D 투자 확인법.", "tags": ["프리미엄", "WSAVA", "사료선택"], "animal": "both", "difficulty": "intermediate", "viralScore": 84},
+            {"id": "vf011", "title": "부산물(By-product)은 나쁜 원료인가?", "description": "부산물=폐기물이라는 오해, 간/심장/신장 등 영양가 높은 내장육, AAFCO 부산물 정의.", "tags": ["부산물", "내장육", "원료오해"], "animal": "both", "difficulty": "intermediate", "viralScore": 88},
+            {"id": "vf012", "title": "가수분해 단백질 사료의 원리", "description": "단백질을 펩타이드 수준으로 분해하여 면역반응 회피, 식이 알러지/IBD 관리용 처방식.", "tags": ["가수분해", "알러지", "처방식"], "animal": "both", "difficulty": "advanced", "viralScore": 73},
+            {"id": "vf013", "title": "사료 전환 방법: 7일 가이드", "description": "급격한 전환 시 구토/설사 위험, 25%씩 점진적 전환법, 장내 세균총 적응 기간.", "tags": ["사료전환", "소화장애"], "animal": "both", "difficulty": "basic", "viralScore": 79},
+            {"id": "vf014", "title": "사료에 들어간 방부제: BHA/BHT/에톡시퀸", "description": "합성 방부제의 안전성 논란, 천연 방부제(토코페롤/로즈마리)와의 비교, 유통기한 차이.", "tags": ["방부제", "BHA", "천연방부제"], "animal": "both", "difficulty": "intermediate", "viralScore": 80},
+            {"id": "vf015", "title": "고양이 전용 사료가 반드시 필요한 이유", "description": "개 사료에는 타우린/아라키돈산/비타민A가 부족, 고양이가 개 사료 장기 섭취 시 위험.", "tags": ["고양이사료", "타우린", "종별차이"], "animal": "cat", "difficulty": "basic", "viralScore": 86},
+            {"id": "vf016", "title": "간식은 하루 칼로리의 몇 %까지?", "description": "간식 10% 룰, 치아 간식의 실제 효과, 건조 고기 간식의 영양가, 과다 급여 시 영양 불균형.", "tags": ["간식", "칼로리", "급여량"], "animal": "both", "difficulty": "basic", "viralScore": 76},
+            {"id": "vf017", "title": "사료 회사 마케팅 vs 과학적 근거", "description": "'인간 등급(Human Grade)', '홀리스틱', '내추럴' 마케팅 용어의 법적 정의와 실제 의미.", "tags": ["마케팅", "사료선택", "용어정의"], "animal": "both", "difficulty": "intermediate", "viralScore": 91},
+            {"id": "vf018", "title": "냉동건조(Freeze-dried) 사료의 장단점", "description": "영양소 보존율, 원재료 형태 유지, 높은 가격대, 수분 복원 급여법.", "tags": ["냉동건조", "사료형태"], "animal": "both", "difficulty": "intermediate", "viralScore": 70},
+            {"id": "vf019", "title": "다이어트 사료: 칼로리 제한의 과학", "description": "L-카르니틴 강화, 섬유질 증가, 단백질 유지 전략으로 포만감과 근육량 보존.", "tags": ["다이어트", "비만관리", "칼로리제한"], "animal": "both", "difficulty": "intermediate", "viralScore": 78},
+            {"id": "vf020", "title": "사료 급여량 계산: 포장 뒷면을 믿지 마라", "description": "사료 포장 급여량은 과다한 경우가 많음, BCS 기반 개별 조정의 필요성.", "tags": ["급여량", "포장지", "칼로리계산"], "animal": "both", "difficulty": "basic", "viralScore": 83}
+          ]
+        },
+        {
+          "id": "vet-disease",
+          "name": "질병",
+          "icon": "🩺",
+          "source": "VET_Pet_care",
+          "topics": [
+            {"id": "vd001", "title": "강아지 슬개골 탈구: 소형견의 숙명?", "description": "Grade 1~4 분류, 소형견 유전적 취약성, 수술 적응증, 체중 관리의 중요성.", "tags": ["슬개골탈구", "소형견", "정형외과"], "animal": "dog", "difficulty": "intermediate", "viralScore": 92},
+            {"id": "vd002", "title": "고양이 하부요로질환(FLUTD): 스트레스가 원인?", "description": "특발성 방광염(FIC), 스트레스와 방광 염증의 연관성, 환경 관리의 중요성, 요로 폐색 응급.", "tags": ["FLUTD", "방광염", "스트레스", "요로"], "animal": "cat", "difficulty": "intermediate", "viralScore": 88},
+            {"id": "vd003", "title": "심장사상충: 예방이 치료보다 100배 쉬운 이유", "description": "모기 매개 감염, 성충 제거의 위험성(폐색전), 연중 예방의 필요성, 고양이도 감염됨.", "tags": ["심장사상충", "예방", "모기"], "animal": "both", "difficulty": "basic", "viralScore": 90},
+            {"id": "vd004", "title": "고양이 만성 신장질환(CKD): IRIS 병기 분류", "description": "Stage 1~4별 크레아티닌/SDMA 기준, 각 병기별 관리 전략, 조기 발견의 중요성.", "tags": ["신장질환", "CKD", "IRIS", "고양이"], "animal": "cat", "difficulty": "advanced", "viralScore": 85},
+            {"id": "vd005", "title": "강아지 파보바이러스: 어린 강아지의 최대 위협", "description": "혈변/구토/탈수 증상, 생존률 90%(조기 치료 시), 모체 항체와 백신 타이밍.", "tags": ["파보바이러스", "전염병", "백신"], "animal": "dog", "difficulty": "intermediate", "viralScore": 87},
+            {"id": "vd006", "title": "당뇨병: 인슐린 주사가 필요한 순간", "description": "다음/다뇨/다식/체중감소 4대 증상, 개(1형)와 고양이(2형)의 차이, 식이 관리.", "tags": ["당뇨", "인슐린", "혈당"], "animal": "both", "difficulty": "intermediate", "viralScore": 80},
+            {"id": "vd007", "title": "아토피 피부염: 긁고 또 긁는 악순환", "description": "환경 알러겐(진드기/꽃가루), 피부 장벽 기능 이상, 면역 조절 치료(사이토포인트/아포퀠).", "tags": ["아토피", "피부염", "알러지"], "animal": "dog", "difficulty": "intermediate", "viralScore": 89},
+            {"id": "vd008", "title": "위확장-꼬임(GDV): 대형견의 응급 질환", "description": "식후 즉시 운동의 위험, 꼬임 시 혈류 차단 쇼크, 예방적 위고정술, 발생 위험 견종.", "tags": ["GDV", "위꼬임", "응급", "대형견"], "animal": "dog", "difficulty": "advanced", "viralScore": 84},
+            {"id": "vd009", "title": "고양이 갑상선기능항진증: 노령묘의 흔한 질환", "description": "체중 감소+식욕 증가 패러독스, 갑상선 호르몬 과다, 방사성 요오드 치료/식이 관리.", "tags": ["갑상선", "노령묘", "호르몬"], "animal": "cat", "difficulty": "advanced", "viralScore": 77},
+            {"id": "vd010", "title": "치주질환: 3살 이상 반려동물 80%가 앓는 병", "description": "치석/치은염/치주염 진행 과정, 스케일링 마취의 안전성, 일상 칫솔질 방법.", "tags": ["치주질환", "치석", "구강건강"], "animal": "both", "difficulty": "basic", "viralScore": 86},
+            {"id": "vd011", "title": "고관절 이형성증(HD): 대형견의 유전질환", "description": "비정상적 고관절 발달, PennHIP/OFA 검사, 체중 관리와 운동 제한, 수술 옵션.", "tags": ["고관절", "이형성증", "대형견", "유전"], "animal": "dog", "difficulty": "advanced", "viralScore": 75},
+            {"id": "vd012", "title": "외이염: 귀가 빨갛고 냄새나요", "description": "세균/효모/진드기 원인 감별, 늘어진 귀 견종의 취약성, 귀 세정 방법.", "tags": ["외이염", "귀질환", "효모"], "animal": "both", "difficulty": "basic", "viralScore": 81},
+            {"id": "vd013", "title": "쿠싱증후군: 물을 많이 마시는 강아지", "description": "부신 피질 호르몬 과잉, 다음/다뇨/복부팽만/탈모, LDDS 검사로 진단.", "tags": ["쿠싱", "부신", "호르몬"], "animal": "dog", "difficulty": "advanced", "viralScore": 72},
+            {"id": "vd014", "title": "고양이 천식: 기침하는 고양이", "description": "알러겐 흡입으로 기관지 수축, 스테로이드 흡입 치료, 먼지 적은 모래로 환경 관리.", "tags": ["천식", "기관지", "호흡기"], "animal": "cat", "difficulty": "intermediate", "viralScore": 78},
+            {"id": "vd015", "title": "림프종: 반려동물에서 가장 흔한 암", "description": "림프절 종대, 항암 화학요법 프로토콜(CHOP), 개와 고양이의 예후 차이.", "tags": ["림프종", "암", "항암치료"], "animal": "both", "difficulty": "advanced", "viralScore": 73},
+            {"id": "vd016", "title": "강아지 구토와 설사: 병원 가야 할 때", "description": "단순 소화불량 vs 응급 상황(혈변/탈수/무기력), 집에서 할 수 있는 것과 없는 것.", "tags": ["구토", "설사", "응급", "소화기"], "animal": "dog", "difficulty": "basic", "viralScore": 91},
+            {"id": "vd017", "title": "고양이 범백혈구감소증(FPV): 치사율 높은 전염병", "description": "파보바이러스과 감염, 어린 고양이 치사율 90%+, 백신으로 예방 가능.", "tags": ["범백", "전염병", "백신"], "animal": "cat", "difficulty": "intermediate", "viralScore": 82},
+            {"id": "vd018", "title": "분리불안 vs 질병: 행동 문제인가 아픈 건가", "description": "배변 실수/파괴행동이 통증이나 질병 때문일 수 있는 경우, 수의사 검진 우선의 원칙.", "tags": ["분리불안", "행동", "감별진단"], "animal": "both", "difficulty": "intermediate", "viralScore": 83},
+            {"id": "vd019", "title": "중성화 수술의 장단점: 최신 연구 결과", "description": "암/자궁축농증 예방 효과, 비만/관절질환 위험 증가, 적정 시기 논란(6개월 vs 12개월+).", "tags": ["중성화", "수술", "건강영향"], "animal": "both", "difficulty": "intermediate", "viralScore": 90},
+            {"id": "vd020", "title": "초콜릿/포도/자일리톨: 반려동물 독성 식품", "description": "테오브로민(초콜릿), 신부전(포도/건포도), 저혈당(자일리톨)의 독성 메커니즘과 응급 대처.", "tags": ["독성", "중독", "초콜릿", "자일리톨"], "animal": "both", "difficulty": "basic", "viralScore": 95}
+          ]
+        },
+        {
+          "id": "vet-prescription",
+          "name": "처방식",
+          "icon": "💊",
+          "source": "VET_Pet_care",
+          "topics": [
+            {"id": "vp001", "title": "신장 처방식: IRIS 병기별 맞춤 전략", "description": "Stage 2부터 인 제한 시작, Stage 3에서 단백질 제한, 오메가3 보충, 칼륨 보정.", "tags": ["신장", "IRIS", "처방식", "인제한"], "animal": "both", "difficulty": "advanced", "viralScore": 78},
+            {"id": "vp002", "title": "요로결석 처방식: 스트루바이트 vs 옥살레이트", "description": "스트루바이트는 식이로 용해 가능, 옥살레이트는 수술만 가능, pH 조절 전략의 차이.", "tags": ["요로결석", "스트루바이트", "옥살레이트"], "animal": "both", "difficulty": "advanced", "viralScore": 82},
+            {"id": "vp003", "title": "간질환 처방식: 단백질 제한의 과학", "description": "간성뇌증 예방을 위한 단백질 질과 양 조절, BCAA 보충, 구리 제한.", "tags": ["간질환", "단백질제한", "간성뇌증"], "animal": "both", "difficulty": "advanced", "viralScore": 65},
+            {"id": "vp004", "title": "당뇨 처방식: 혈당 스파이크를 줄이는 식단", "description": "저GI 탄수화물, 고섬유질, 고단백질 조합으로 혈당 안정화, 인슐린 투여 시간과 식사 동기화.", "tags": ["당뇨", "혈당", "저GI"], "animal": "both", "difficulty": "advanced", "viralScore": 74},
+            {"id": "vp005", "title": "식이 알러지 처방식: 새로운 단백질 vs 가수분해", "description": "노벨 프로틴(사슴/캥거루/오리) 접근법, 가수분해 단백질의 장단점, 진단과 치료의 이중역할.", "tags": ["알러지", "가수분해", "노벨프로틴"], "animal": "both", "difficulty": "advanced", "viralScore": 80},
+            {"id": "vp006", "title": "비만 관리 처방식: 10% 체중 감량의 효과", "description": "체중 감량 속도(주 1~2%), 포만감 유지 전략, 운동 병행, 리바운드 방지.", "tags": ["비만", "체중관리", "다이어트"], "animal": "both", "difficulty": "intermediate", "viralScore": 83},
+            {"id": "vp007", "title": "IBD(염증성 장질환) 식이 관리", "description": "소화가 쉬운 단일 단백질원, 오메가3 항염증 효과, 프로바이오틱스 병행.", "tags": ["IBD", "장질환", "소화기"], "animal": "both", "difficulty": "advanced", "viralScore": 72},
+            {"id": "vp008", "title": "췌장염 처방식: 저지방의 원칙", "description": "급성 췌장염 후 저지방 식이 전환, 지방 10% 이하, MCT 오일 활용.", "tags": ["췌장염", "저지방"], "animal": "both", "difficulty": "advanced", "viralScore": 76},
+            {"id": "vp009", "title": "심장병 처방식: 나트륨 제한과 타우린 보충", "description": "울혈성 심부전 시 나트륨 제한 단계, 타우린/L-카르니틴 보충의 심장 보호 효과.", "tags": ["심장병", "나트륨", "타우린"], "animal": "both", "difficulty": "advanced", "viralScore": 70},
+            {"id": "vp010", "title": "인지기능장애(CDS) 처방식: 뇌 노화를 늦추는 식단", "description": "MCT(중쇄지방산)의 뇌 에너지원 역할, 항산화 칵테일, SAMe/비타민E 보충.", "tags": ["인지장애", "치매", "노령", "뇌건강"], "animal": "both", "difficulty": "advanced", "viralScore": 75},
+            {"id": "vp011", "title": "암 환자의 영양 관리", "description": "종양세포의 포도당 선호(와버그 효과), 고지방/고단백/저탄수화물 전략, 오메가3의 항암 효과.", "tags": ["암", "종양", "영양관리"], "animal": "both", "difficulty": "advanced", "viralScore": 71},
+            {"id": "vp012", "title": "피부 질환 처방식: 안에서부터 치료하기", "description": "오메가-3/6 비율 5~10:1, 아연/비타민E 보충, 세라마이드로 피부 장벽 강화.", "tags": ["피부", "오메가3", "영양"], "animal": "both", "difficulty": "intermediate", "viralScore": 79},
+            {"id": "vp013", "title": "관절 처방식: 체중 감량 + 관절 보호 영양소", "description": "EPA/DHA의 관절 항염, 글루코사민/콘드로이틴, L-카르니틴으로 체중 감량 병행.", "tags": ["관절", "관절염", "처방식"], "animal": "both", "difficulty": "intermediate", "viralScore": 77},
+            {"id": "vp014", "title": "스트레스 관리 처방식: 알파카소제핀과 트립토판", "description": "카제인 유래 알파카소제핀의 항불안 효과, 트립토판→세로토닌 경로, 식이를 통한 불안 완화.", "tags": ["스트레스", "불안", "트립토판"], "animal": "both", "difficulty": "advanced", "viralScore": 74},
+            {"id": "vp015", "title": "처방식 선택 가이드: 질환별 최우선 영양 전략", "description": "신장(인↓), 간(단백질↓), 당뇨(섬유질↑), 비만(칼로리↓), 피부(오메가3↑) 한 눈에 정리.", "tags": ["처방식가이드", "질환별", "영양전략"], "animal": "both", "difficulty": "intermediate", "viralScore": 85}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "behavior",
+      "name": "행동분석학",
+      "icon": "🧠",
+      "subcategories": [
+        {
+          "id": "beh-psychology",
+          "name": "행동심리",
+          "icon": "💭",
+          "source": "강아지 고양이 행동분석학",
+          "topics": [
+            {"id": "bp001", "title": "고양이는 복수하지 않는다: 배변 실수의 진짜 이유", "description": "배변 실수=앙심이라는 오해. 실제로는 스트레스/불안/질병의 표현. 환경 변화가 주원인.", "tags": ["고양이", "배변", "오해바로잡기"], "animal": "cat", "difficulty": "basic", "viralScore": 94},
+            {"id": "bp002", "title": "배를 보이는 고양이: 만져달라는 뜻이 아니다", "description": "배 노출=신뢰 표현이지 접촉 허락이 아님. 취약 부위를 노출하는 것은 상대를 믿는다는 의미.", "tags": ["고양이", "배보이기", "오해"], "animal": "cat", "difficulty": "basic", "viralScore": 96},
+            {"id": "bp003", "title": "고양이는 사회적 동물이다: 고독한 사냥꾼의 진실", "description": "고양이=비사회적이라는 통념을 깨는 연구. 유전적 요인과 초기 경험에 따라 깊은 유대감 형성.", "tags": ["고양이", "사회성", "오해바로잡기"], "animal": "cat", "difficulty": "intermediate", "viralScore": 87},
+            {"id": "bp004", "title": "강아지가 말보다 몸짓을 더 잘 이해하는 이유", "description": "'펠로우' 실험: 주인의 몸짓/시선 없이는 언어 명령 수행 불가. 비언어적 신호에 의존.", "tags": ["강아지", "의사소통", "몸짓"], "animal": "dog", "difficulty": "basic", "viralScore": 88},
+            {"id": "bp005", "title": "꼬리 흔들기 ≠ 반가움: 흥분의 방향이 중요하다", "description": "꼬리 흔들기는 '흥분' 상태일 뿐. 위치(높이)/속도/모양에 따라 도전/공포/기쁨 구분.", "tags": ["강아지", "꼬리", "오해바로잡기"], "animal": "dog", "difficulty": "basic", "viralScore": 93},
+            {"id": "bp006", "title": "골골송이 항상 행복은 아니다: 자가 치유 메커니즘", "description": "골골송=만족감 + 통증 시 자가 진정 목적. 25Hz 진동이 골밀도 증가와 상처 치유를 촉진.", "tags": ["고양이", "골골송", "자가치유"], "animal": "cat", "difficulty": "intermediate", "viralScore": 91},
+            {"id": "bp007", "title": "야옹(Meow)은 인간을 위한 언어다", "description": "성묘 간에는 야옹 소리 거의 사용 안 함. 인간의 주의를 끌기 위해 발달시킨 고유 소통 수단.", "tags": ["고양이", "야옹", "의사소통"], "animal": "cat", "difficulty": "basic", "viralScore": 89},
+            {"id": "bp008", "title": "4가지 공포 반응(4F): Flight, Fight, Freeze, Fidget", "description": "위협 시 도주/싸움/얼어붙음/안절부절 중 하나로 반응. 동물마다 주된 반응 패턴이 다름.", "tags": ["공포", "스트레스", "방어기제"], "animal": "both", "difficulty": "intermediate", "viralScore": 82},
+            {"id": "bp009", "title": "전위 행동: 뜬금없이 몸을 긁는 이유", "description": "갈등 상황에서 상황과 무관한 행동(긁기/냄새맡기/하품)을 하며 스트레스 해소.", "tags": ["전위행동", "스트레스", "행동분석"], "animal": "both", "difficulty": "intermediate", "viralScore": 78},
+            {"id": "bp010", "title": "분리불안: 알파가 떠나면 불안해하는 심리", "description": "보호자 부재 시 파괴/배변실수/하울링. 늑대 무리에서 리더가 떠나면 불안해하는 본능.", "tags": ["분리불안", "불안", "강아지"], "animal": "dog", "difficulty": "intermediate", "viralScore": 86},
+            {"id": "bp011", "title": "자원 방어(Resource Guarding): 으르렁 = 위험 신호", "description": "음식/장난감/자리를 지키려 경직/으르렁. 처벌하면 악화됨. 교환 훈련이 해결책.", "tags": ["자원방어", "공격성", "훈련"], "animal": "dog", "difficulty": "intermediate", "viralScore": 84},
+            {"id": "bp012", "title": "고양이 감정 좌표계: 평온-공격-방어 3축 분석", "description": "폴 레이하우젠 이론 기반, 평온(0,0)에서 공격성(X축)/방어성(Y축)으로 감정 매핑.", "tags": ["감정분석", "좌표계", "고양이"], "animal": "cat", "difficulty": "advanced", "viralScore": 75},
+            {"id": "bp013", "title": "핼러윈 고양이: 공격+방어가 동시에 나타나는 극한 상태", "description": "등 구부리기+털 곤두세우기+옆으로 서기. '무섭지만 건드리면 죽기살기로 싸운다'는 신호.", "tags": ["핼러윈고양이", "공격성", "방어"], "animal": "cat", "difficulty": "intermediate", "viralScore": 88},
+            {"id": "bp014", "title": "고양이 스프레이: 영역 표시 vs 배변 실수", "description": "수직면에 소변=스프레이(영역 표시), 수평면 배변=화장실 문제. 구분법과 대응 전략.", "tags": ["스프레이", "영역표시", "배변"], "animal": "cat", "difficulty": "intermediate", "viralScore": 85},
+            {"id": "bp015", "title": "꾹꾹이의 이중 의미: 편안함 + 영역 표시", "description": "새끼 때 엄마 배 주무르던 행동 잔존 + 발바닥 냄새샘으로 영역 마킹하는 이중 목적.", "tags": ["꾹꾹이", "행동분석", "고양이"], "animal": "cat", "difficulty": "basic", "viralScore": 90},
+            {"id": "bp016", "title": "견종별 사투리(Dialects): 의사소통 오해의 원인", "description": "늑대 유사 견종(Wolfish)은 복잡한 신호, 유형성숙 견종(Puppyish)은 단순 신호. 견종 간 오해.", "tags": ["견종", "의사소통", "사투리"], "animal": "dog", "difficulty": "advanced", "viralScore": 80},
+            {"id": "bp017", "title": "마운팅은 성적 행동이 아닌 경우가 많다", "description": "사회적 서열 확인/스트레스 발산/놀이의 일종. 중성화 후에도 계속되는 이유.", "tags": ["마운팅", "서열", "오해바로잡기"], "animal": "dog", "difficulty": "intermediate", "viralScore": 83},
+            {"id": "bp018", "title": "고양이의 느린 눈깜빡임(Slow Blink): 사랑의 표현", "description": "느리게 눈을 깜빡이는 것은 신뢰와 애정의 표현. 보호자가 따라하면 유대감 강화.", "tags": ["슬로우블링크", "애정표현", "유대감"], "animal": "cat", "difficulty": "basic", "viralScore": 92},
+            {"id": "bp019", "title": "강아지의 하품: 피곤한 게 아니라 불안한 것", "description": "맥락 없는 하품은 진정 신호(Calming Signal). 상대방에게 '나는 위협적이지 않다'고 전달.", "tags": ["하품", "진정신호", "스트레스"], "animal": "dog", "difficulty": "basic", "viralScore": 85},
+            {"id": "bp020", "title": "머리 번팅(Bunting): 가족 냄새를 공유하는 행동", "description": "고양이가 머리/몸을 비비는 행동은 냄새샘으로 가족 냄새를 교환하는 친밀감 표현.", "tags": ["번팅", "냄새", "친밀감"], "animal": "cat", "difficulty": "basic", "viralScore": 84}
+          ]
+        },
+        {
+          "id": "beh-training",
+          "name": "훈련",
+          "icon": "🎓",
+          "source": "강아지 고양이 행동분석학",
+          "topics": [
+            {"id": "bt001", "title": "간식 훈련 = 게으른 훈련? 늑대 무리 이론의 주장", "description": "The Wolf Pack Guide: 간식으로 복종 유도는 '가짜 권력'. 늑대 알파는 먹이로 보상하지 않음.", "tags": ["간식훈련", "늑대이론", "논쟁"], "animal": "dog", "difficulty": "intermediate", "viralScore": 90},
+            {"id": "bt002", "title": "긍정 강화 vs 양성 벌: 어떤 방법이 효과적인가", "description": "긍정강화(보상→행동증가)가 가장 권장됨. 양성벌(체벌)은 공포심만 유발, 관계 파괴.", "tags": ["긍정강화", "학습이론", "훈련방법"], "animal": "both", "difficulty": "intermediate", "viralScore": 86},
+            {"id": "bt003", "title": "클리커 트레이닝: 고양이도 훈련 가능하다", "description": "클릭 소리+보상 연결(고전적 조건화), 정확한 타이밍이 핵심, 고양이 트릭 훈련 성공 사례.", "tags": ["클리커", "고양이훈련", "조건화"], "animal": "cat", "difficulty": "intermediate", "viralScore": 84},
+            {"id": "bt004", "title": "알파 되기: 쉬익 소리와 독 태핑", "description": "경고음(Hiss)으로 행동 중단, 손가락 톡(Dog Tapping)으로 주의 환기. 자연계 신호 모방.", "tags": ["알파", "훈련법", "늑대이론"], "animal": "dog", "difficulty": "intermediate", "viralScore": 79},
+            {"id": "bt005", "title": "산책 통제: 리드줄을 쥔 자가 리더", "description": "문 앞 앉기→차분해진 후 출발, 무릎 옆 걷기, 슬립매듭 리드줄 활용법.", "tags": ["산책", "리더십", "리드줄"], "animal": "dog", "difficulty": "basic", "viralScore": 82},
+            {"id": "bt006", "title": "무관심 훈련(Ignoring): 나쁜 행동 소거법", "description": "원치 않는 행동에 무반응. 짖음/점프에 등 돌리기. 차분해졌을 때 관심 제공.", "tags": ["무관심", "행동소거", "훈련법"], "animal": "dog", "difficulty": "basic", "viralScore": 77},
+            {"id": "bt007", "title": "고전적 조건화 vs 조작적 조건화", "description": "파블로프(자극-반응 연결) vs 스키너(행동-결과 연결). 반려동물 훈련에서의 실제 적용.", "tags": ["학습이론", "조건화", "심리학"], "animal": "both", "difficulty": "advanced", "viralScore": 70},
+            {"id": "bt008", "title": "탈감작(Desensitization): 공포 극복 훈련", "description": "두려운 자극을 아주 낮은 강도부터 점진적 노출. 긍정 경험 연결로 공포 반응 감소.", "tags": ["탈감작", "공포극복", "행동교정"], "animal": "both", "difficulty": "advanced", "viralScore": 76},
+            {"id": "bt009", "title": "물기 억제(Bite Inhibition): 놀이에서 배우는 사회성", "description": "강아지끼리 놀면서 무는 힘 조절 학습. 어릴 때 사회화 부족 시 성견의 물기 사고 위험.", "tags": ["물기억제", "사회화", "놀이"], "animal": "dog", "difficulty": "intermediate", "viralScore": 81},
+            {"id": "bt010", "title": "벌은 왜 효과가 없는가: 타이밍과 공포의 문제", "description": "사후 체벌(귀가 후 혼내기)은 무의미, 공포심만 유발, 보호자-동물 관계 파괴.", "tags": ["벌", "체벌", "부작용"], "animal": "both", "difficulty": "intermediate", "viralScore": 85},
+            {"id": "bt011", "title": "화장실 훈련: 고양이 리터박스 최적 조건", "description": "N+1 규칙(고양이 수+1개), 조용하고 접근 쉬운 위치, 모래 선호도, 청소 빈도.", "tags": ["화장실", "리터박스", "고양이"], "animal": "cat", "difficulty": "basic", "viralScore": 83},
+            {"id": "bt012", "title": "합사 단계별 가이드: 새 동물 데려오기", "description": "냄새 교환(1주)→ 시각적 노출(2주)→ 감시하 대면(3주). 급하면 실패.", "tags": ["합사", "다두가정", "사회화"], "animal": "both", "difficulty": "intermediate", "viralScore": 87},
+            {"id": "bt013", "title": "식사 관리로 서열 정리: 그릇에 담아 정해진 시간에", "description": "손으로 먹이지 않기, 요구 시 무반응, 차분해졌을 때 급여. 알파의 식사 통제 원칙.", "tags": ["식사관리", "서열", "리더십"], "animal": "dog", "difficulty": "intermediate", "viralScore": 72},
+            {"id": "bt014", "title": "스크래칭 관리: 고양이 스크래처 선택법", "description": "수직/수평 스크래처, 삼/골판지/로프 재질, 위치 선정, 기존 가구 보호 방법.", "tags": ["스크래칭", "스크래처", "환경관리"], "animal": "cat", "difficulty": "basic", "viralScore": 78},
+            {"id": "bt015", "title": "사냥 놀이: 고양이의 본능을 충족하는 30분", "description": "낚싯대 장난감으로 사냥 시퀀스 재현(관찰→추적→도약→포획→먹기), 하루 2회 15분.", "tags": ["사냥놀이", "환경풍부화", "고양이"], "animal": "cat", "difficulty": "basic", "viralScore": 86}
+          ]
+        },
+        {
+          "id": "beh-bodylang",
+          "name": "신체 언어",
+          "icon": "👀",
+          "source": "강아지 고양이 행동분석학",
+          "topics": [
+            {"id": "bb001", "title": "강아지 신호등 시스템: 초록/노랑/빨강", "description": "Green(편안/안전)→Yellow(입술핥기/하품/주의)→Red(경직/으르렁/위험). 접근 가능 여부 판단법.", "tags": ["신호등", "안전", "접근법"], "animal": "dog", "difficulty": "basic", "viralScore": 88},
+            {"id": "bb002", "title": "강아지 귀의 위치로 읽는 7가지 감정", "description": "쫑긋(자신감), 뒤로(친근), 납작(공포), 한쪽 앞(호기심), 빠르게 움직임(불안).", "tags": ["귀", "감정읽기", "강아지"], "animal": "dog", "difficulty": "basic", "viralScore": 86},
+            {"id": "bb003", "title": "반달 눈(Whale Eye): 스트레스의 명확한 신호", "description": "눈 흰자가 초승달 모양으로 보이면 불안/스트레스 상태. 아이와 개 사진에서 자주 발견.", "tags": ["반달눈", "스트레스", "경고신호"], "animal": "dog", "difficulty": "basic", "viralScore": 90},
+            {"id": "bb004", "title": "고양이 꼬리 사전: 위치와 모양으로 읽는 기분", "description": "수직↑(자신감), 물음표?(놀이초대), 부풀림(공포), 낮게↓(불안), 빠르게 좌우(짜증).", "tags": ["꼬리", "고양이", "감정읽기"], "animal": "cat", "difficulty": "basic", "viralScore": 91},
+            {"id": "bb005", "title": "고양이 귀로 읽는 감정: 마징가 귀 = 위험", "description": "앞을 향함(호기심), 옆으로(경계), 뒤로 납작(방어/공격 임박='마징가 귀').", "tags": ["귀", "고양이", "경고신호"], "animal": "cat", "difficulty": "basic", "viralScore": 87},
+            {"id": "bb006", "title": "놀이 활(Play Bow): 가장 중요한 놀이 신호", "description": "앞다리 낮추고 엉덩이 올리기. '이건 장난이야'라는 명확한 선언. 이 신호 없는 거친 행동=진짜 공격.", "tags": ["플레이바우", "놀이", "강아지"], "animal": "dog", "difficulty": "basic", "viralScore": 85},
+            {"id": "bb007", "title": "고양이 수염의 비밀: 앞으로 향하면 호기심", "description": "수염 앞으로(호기심/탐색), 얼굴에 붙음(두려움/방어), 자연스러움(편안).", "tags": ["수염", "고양이", "감정읽기"], "animal": "cat", "difficulty": "basic", "viralScore": 82},
+            {"id": "bb008", "title": "진정 신호(Calming Signals) 완전 가이드", "description": "고개 돌리기, 냄새 맡는 척, 하품, 입술 핥기, 천천히 움직이기. 상대를 진정시키는 18가지 신호.", "tags": ["진정신호", "칼밍시그널", "소통"], "animal": "dog", "difficulty": "intermediate", "viralScore": 83},
+            {"id": "bb009", "title": "고양이 동공 크기로 읽는 감정 상태", "description": "동공 확장(흥분/공포/흥미), 동공 수축(공격적 자신감/밝은 빛), 반쯤 감음(편안/졸림).", "tags": ["동공", "눈", "고양이"], "animal": "cat", "difficulty": "basic", "viralScore": 84},
+            {"id": "bb010", "title": "개와 고양이의 신호 충돌: 꼬리의 반대 의미", "description": "개: 꼬리 흔들기=흥분/초대, 고양이: 꼬리 흔들기=짜증/공격. 같은 집 합사 시 주의점.", "tags": ["신호충돌", "개고양이", "합사"], "animal": "both", "difficulty": "intermediate", "viralScore": 92},
+            {"id": "bb011", "title": "고양이 행동 표기법: 숫자로 기록하는 감정", "description": "Ziyi Zhao의 연구: 고양이 자세를 '1143 11 5231' 같은 디지털 코드로 기록하는 시스템.", "tags": ["표기법", "연구", "행동분석"], "animal": "cat", "difficulty": "advanced", "viralScore": 70},
+            {"id": "bb012", "title": "강아지 입 모양으로 읽는 감정", "description": "C자 퍼커(긴장), 헐떡임(스트레스/더위), 입 꽉 다묾(경계), 입꼬리 올라감(편안).", "tags": ["입", "표정", "강아지"], "animal": "dog", "difficulty": "basic", "viralScore": 80},
+            {"id": "bb013", "title": "털 세우기(Piloerection): 단순히 화난 게 아니다", "description": "등줄기 털 곤두세우기는 흥분/공포/공격성 모두 가능. 맥락에 따라 해석이 달라짐.", "tags": ["털세우기", "흥분", "공격성"], "animal": "both", "difficulty": "intermediate", "viralScore": 79},
+            {"id": "bb014", "title": "특수 발성 해독: 트릴링/채터링/으르렁/비명", "description": "트릴링(인사/기쁨), 채터링(사냥본능), 으르렁(경고), 비명/야울링(극도 불쾌/발정).", "tags": ["발성", "소리", "의사소통"], "animal": "cat", "difficulty": "intermediate", "viralScore": 81},
+            {"id": "bb015", "title": "강아지 짖음 해독: 피치/지속시간/반복속도", "description": "낮은 음=위협, 높은 음=친근. 짧고 반복=긴급, 길게 이어짐=의도적. 하울링=무리 소집.", "tags": ["짖음", "음성", "해독"], "animal": "dog", "difficulty": "intermediate", "viralScore": 83}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trends",
+      "name": "트렌드분석",
+      "icon": "📈",
+      "subcategories": [
+        {
+          "id": "trend-news",
+          "name": "최신 뉴스/이슈",
+          "icon": "📰",
+          "source": "웹 크롤링",
+          "topics": []
+        }
+      ]
+    }
+  ]
+}
