@@ -5,9 +5,12 @@ const fs = require('fs');
 const app = express();
 const PORT = 3300;
 
-const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'content-db.json'), 'utf8'));
+function loadData() {
+  return JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'content-db.json'), 'utf8'));
+}
 
 function getAllTopics() {
+  const data = loadData();
   const topics = [];
   for (const cat of data.categories) {
     for (const sub of cat.subcategories) {
@@ -22,6 +25,7 @@ function getAllTopics() {
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api/categories', (req, res) => {
+  const data = loadData();
   const cats = data.categories.map(c => ({
     id: c.id, name: c.name, icon: c.icon,
     subcategories: c.subcategories.map(s => ({ id: s.id, name: s.name, icon: s.icon, count: s.topics.length }))
@@ -52,6 +56,7 @@ app.get('/api/trends', (req, res) => {
 });
 
 app.get('/api/stats', (req, res) => {
+  const data = loadData();
   const stats = { total: 0, categories: {} };
   for (const cat of data.categories) {
     let catTotal = 0;
