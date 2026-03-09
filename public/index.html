@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐾 반려동물 콘텐츠 대시보드</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1117;--bg2:#1a1d27;--bg3:#242836;--bg4:#2d3244;
+  --text:#e4e6ef;--text2:#9ca0b0;--text3:#6b7089;
+  --accent:#3dd6b5;--accent2:#2bb89a;--accent-bg:rgba(61,214,181,.1);
+  --orange:#f59e0b;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;
+  --card-radius:14px;--sidebar-w:280px;
+}
+body{font-family:'Pretendard',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--bg3);padding:20px 0;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:10}
+.sidebar-header{padding:0 20px 20px;border-bottom:1px solid var(--bg3)}
+.sidebar-header h1{font-size:18px;display:flex;align-items:center;gap:8px}
+.sidebar-header h1 span{font-size:24px}
+.sidebar-stats{padding:16px 20px;border-bottom:1px solid var(--bg3)}
+.stat-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:var(--text2)}
+.stat-row .count{color:var(--accent);font-weight:600}
+.cat-section{padding:8px 0}
+.cat-title{padding:10px 20px;font-size:13px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.cat-title:hover{color:var(--text2)}
+.sub-item{padding:8px 20px 8px 36px;font-size:13px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s}
+.sub-item:hover,.sub-item.active{background:var(--accent-bg);color:var(--accent)}
+.sub-item .badge{background:var(--bg4);color:var(--text3);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.sub-item.active .badge{background:var(--accent);color:var(--bg)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh}
+.topbar{padding:20px 28px;border-bottom:1px solid var(--bg3);background:var(--bg);position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.search-box{flex:1;min-width:200px;position:relative}
+.search-box input{width:100%;padding:10px 16px 10px 40px;background:var(--bg2);border:1px solid var(--bg3);border-radius:10px;color:var(--text);font-size:14px;outline:none;transition:border .2s}
+.search-box input:focus{border-color:var(--accent)}
+.search-box::before{content:'🔍';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px}
+.filter-group{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{padding:7px 14px;background:var(--bg3);border:none;border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.filter-btn:hover{background:var(--bg4);color:var(--text)}
+.filter-btn.active{background:var(--accent);color:var(--bg);font-weight:600}
+
+/* CONTENT */
+.content{padding:24px 28px}
+.section-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title .count-badge{background:var(--accent-bg);color:var(--accent);font-size:12px;padding:3px 10px;border-radius:12px;font-weight:600}
+
+/* TREND SECTION */
+.trend-section{margin-bottom:32px}
+.trend-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.trend-card{min-width:220px;max-width:220px;background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--bg4);border-radius:var(--card-radius);padding:16px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.trend-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.trend-rank{font-size:28px;font-weight:800;color:var(--accent);opacity:.5;line-height:1}
+.trend-title{font-size:13px;font-weight:600;margin-top:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.trend-score{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)}
+.trend-bar{flex:1;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.trend-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px;transition:width .5s}
+
+/* TOPIC GRID */
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.topic-card{background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--card-radius);padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.topic-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.topic-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue));opacity:0;transition:opacity .2s}
+.topic-card:hover::before{opacity:1}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.card-animal{font-size:20px}
+.card-title{font-size:14px;font-weight:700;line-height:1.5;flex:1}
+.card-desc{font-size:12px;color:var(--text2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:12px}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.tag{padding:3px 8px;background:var(--bg3);border-radius:6px;font-size:10px;color:var(--text2)}
+.card-footer{display:flex;justify-content:space-between;align-items:center}
+.diff-badge{padding:3px 10px;border-radius:6px;font-size:10px;font-weight:600}
+.diff-basic{background:rgba(59,130,246,.15);color:var(--blue)}
+.diff-intermediate{background:rgba(245,158,11,.15);color:var(--orange)}
+.diff-advanced{background:rgba(139,92,246,.15);color:var(--purple)}
+.viral-score{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)}
+.viral-bar{width:60px;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.viral-fill{height:100%;border-radius:2px}
+.viral-high{background:var(--accent)}
+.viral-med{background:var(--orange)}
+.viral-low{background:var(--text3)}
+.cat-badge{font-size:10px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--bg3)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:100;justify-content:center;align-items:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--bg3);border-radius:16px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;padding:32px}
+.modal-close{float:right;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px}
+.modal-close:hover{color:var(--text)}
+.modal h2{font-size:20px;margin-bottom:8px;line-height:1.5;padding-right:32px}
+.modal .modal-cat{font-size:12px;color:var(--accent);margin-bottom:16px}
+.modal .modal-desc{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:20px}
+.modal .modal-meta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.modal .modal-tags{display:flex;flex-wrap:wrap;gap:6px}
+.modal .modal-tags .tag{font-size:12px;padding:4px 12px}
+.modal .viral-big{display:flex;align-items:center;gap:8px;margin-top:16px;padding:16px;background:var(--bg3);border-radius:10px}
+.modal .viral-big-bar{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.modal .viral-big-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:4px}
+.modal .viral-big-text{font-size:24px;font-weight:800;color:var(--accent)}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:16px}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .topic-grid{grid-template-columns:1fr}
+  .trend-card{min-width:180px;max-width:180px}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h1><span>🐾</span> 콘텐츠 DB</h1>
+  </div>
+  <div class="sidebar-stats" id="sidebarStats"></div>
+  <div id="categoryTree"></div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="주제 검색... (제목, 설명, 태그)">
+    </div>
+    <div class="filter-group" id="animalFilters">
+      <button class="filter-btn active" data-animal="all">전체</button>
+      <button class="filter-btn" data-animal="dog">🐕 강아지</button>
+      <button class="filter-btn" data-animal="cat">🐈 고양이</button>
+    </div>
+    <div class="filter-group" id="diffFilters">
+      <button class="filter-btn active" data-diff="all">전체</button>
+      <button class="filter-btn" data-diff="basic">기초</button>
+      <button class="filter-btn" data-diff="intermediate">중급</button>
+      <button class="filter-btn" data-diff="advanced">전문</button>
+    </div>
+    <div class="filter-group">
+      <button class="filter-btn active" data-sort="viral" id="sortViral">🔥 바이럴순</button>
+      <button class="filter-btn" data-sort="alpha" id="sortAlpha">가나다순</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="trend-section">
+      <div class="section-title">🔥 트렌드 추천 TOP 10</div>
+      <div class="trend-scroll" id="trendScroll"></div>
+    </div>
+
+    <div class="section-title">
+      📋 전체 주제 <span class="count-badge" id="totalCount">0</span>
+    </div>
+    <div class="topic-grid" id="topicGrid"></div>
+    <div class="empty" id="emptyState" style="display:none">
+      <div class="empty-icon">🔍</div>
+      <div>검색 결과가 없습니다</div>
+    </div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modalTitle"></h2>
+    <div class="modal-cat" id="modalCat"></div>
+    <div class="modal-desc" id="modalDesc"></div>
+    <div class="modal-meta" id="modalMeta"></div>
+    <div class="modal-tags" id="modalTags"></div>
+    <div class="viral-big">
+      <div>바이럴 스코어</div>
+      <div class="viral-big-bar"><div class="viral-big-fill" id="modalViralBar"></div></div>
+      <div class="viral-big-text" id="modalViralText"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const state = { q: '', animal: 'all', difficulty: 'all', sort: 'viral', subcategory: null, category: null };
+const animalIcon = { dog: '🐕', cat: '🐈', both: '🐾' };
+const diffLabel = { basic: '기초', intermediate: '중급', advanced: '전문' };
+
+async function fetchJSON(url) { return (await fetch(url)).json(); }
+
+async function init() {
+  const [cats, trends, stats] = await Promise.all([
+    fetchJSON('/api/categories'),
+    fetchJSON('/api/trends'),
+    fetchJSON('/api/stats')
+  ]);
+  renderSidebar(cats, stats);
+  renderTrends(trends);
+  loadTopics();
+}
+
+function renderSidebar(cats, stats) {
+  const statsEl = document.getElementById('sidebarStats');
+  statsEl.innerHTML = `<div class="stat-row"><span>전체 주제</span><span class="count">${stats.total}</span></div>` +
+    Object.entries(stats.categories).map(([k,v]) => `<div class="stat-row"><span>${k}</span><span class="count">${v}</span></div>`).join('');
+  
+  const tree = document.getElementById('categoryTree');
+  tree.innerHTML = cats.map(c => `
+    <div class="cat-section">
+      <div class="cat-title" onclick="filterCategory('${c.id}')">${c.icon} ${c.name}</div>
+      ${c.subcategories.map(s => `
+        <div class="sub-item" data-sub="${s.id}" onclick="filterSub('${s.id}','${c.id}')">
+          <span>${s.icon} ${s.name}</span>
+          <span class="badge">${s.count}</span>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function renderTrends(trends) {
+  const el = document.getElementById('trendScroll');
+  el.innerHTML = trends.map((t, i) => `
+    <div class="trend-card" onclick='showModal(${JSON.stringify(t).replace(/'/g,"&#39;")})'>
+      <div class="trend-rank">#${i+1}</div>
+      <div class="trend-title">${t.title}</div>
+      <div class="trend-score">
+        ${animalIcon[t.animal]} ${t.subcategoryName}
+        <div class="trend-bar"><div class="trend-bar-fill" style="width:${t.viralScore}%"></div></div>
+        ${t.viralScore}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadTopics() {
+  const params = new URLSearchParams();
+  if (state.q) params.set('q', state.q);
+  if (state.animal !== 'all') params.set('animal', state.animal);
+  if (state.difficulty !== 'all') params.set('difficulty', state.difficulty);
+  if (state.subcategory) params.set('subcategory', state.subcategory);
+  if (state.category) params.set('category', state.category);
+  params.set('sort', state.sort);
+
+  const data = await fetchJSON('/api/topics?' + params);
+  document.getElementById('totalCount').textContent = data.total;
+  const grid = document.getElementById('topicGrid');
+  const empty = document.getElementById('emptyState');
+
+  if (data.topics.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = data.topics.map(t => {
+    const vClass = t.viralScore >= 85 ? 'viral-high' : t.viralScore >= 70 ? 'viral-med' : 'viral-low';
+    return `
+    <div class="topic-card" onclick='showModal(${JSON.stringify(t).replace(/'/g,"&#39;")})'>
+      <div class="card-header">
+        <div class="card-title">${t.title}</div>
+        <div class="card-animal">${animalIcon[t.animal]}</div>
+      </div>
+      <div class="card-desc">${t.description}</div>
+      <div class="card-tags">${t.tags.slice(0,4).map(tag => `<span class="tag">#${tag}</span>`).join('')}</div>
+      <div class="card-footer">
+        <span class="diff-badge diff-${t.difficulty}">${diffLabel[t.difficulty]}</span>
+        <div class="viral-score">
+          🔥 <div class="viral-bar"><div class="viral-fill ${vClass}" style="width:${t.viralScore}%"></div></div> ${t.viralScore}
+        </div>
+      </div>
+      <div class="cat-badge">${t.categoryIcon} ${t.categoryName} > ${t.subcategoryName}</div>
+    </div>`;
+  }).join('');
+}
+
+function showModal(t) {
+  document.getElementById('modalTitle').textContent = t.title;
+  document.getElementById('modalCat').textContent = `${t.categoryIcon || ''} ${t.categoryName || ''} > ${t.subcategoryIcon || ''} ${t.subcategoryName || ''} | ${animalIcon[t.animal]} ${t.animal === 'dog' ? '강아지' : t.animal === 'cat' ? '고양이' : '공통'}`;
+  document.getElementById('modalDesc').textContent = t.description;
+  document.getElementById('modalMeta').innerHTML = `
+    <span class="diff-badge diff-${t.difficulty}">${diffLabel[t.difficulty]}</span>
+    <span style="color:var(--text3);font-size:12px">ID: ${t.id}</span>
+  `;
+  document.getElementById('modalTags').innerHTML = t.tags.map(tag => `<span class="tag">#${tag}</span>`).join('');
+  document.getElementById('modalViralBar').style.width = t.viralScore + '%';
+  document.getElementById('modalViralText').textContent = t.viralScore;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// SEARCH
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.q = e.target.value; loadTopics(); }, 300);
+});
+
+// FILTERS
+document.getElementById('animalFilters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('#animalFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.animal = btn.dataset.animal;
+  loadTopics();
+});
+
+document.getElementById('diffFilters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('#diffFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.difficulty = btn.dataset.diff;
+  loadTopics();
+});
+
+document.getElementById('sortViral').addEventListener('click', () => {
+  state.sort = 'viral';
+  document.getElementById('sortViral').classList.add('active');
+  document.getElementById('sortAlpha').classList.remove('active');
+  loadTopics();
+});
+document.getElementById('sortAlpha').addEventListener('click', () => {
+  state.sort = 'alpha';
+  document.getElementById('sortAlpha').classList.add('active');
+  document.getElementById('sortViral').classList.remove('active');
+  loadTopics();
+});
+
+function filterSub(subId, catId) {
+  document.querySelectorAll('.sub-item').forEach(el => el.classList.remove('active'));
+  if (state.subcategory === subId) {
+    state.subcategory = null;
+    state.category = null;
+  } else {
+    state.subcategory = subId;
+    state.category = catId;
+    document.querySelector(`[data-sub="${subId}"]`)?.classList.add('active');
+  }
+  loadTopics();
+}
+
+function filterCategory(catId) {
+  document.querySelectorAll('.sub-item').forEach(el => el.classList.remove('active'));
+  if (state.category === catId && !state.subcategory) {
+    state.category = null;
+  } else {
+    state.category = catId;
+    state.subcategory = null;
+  }
+  loadTopics();
+}
+
+init();
+</script>
+</body>
+</html>
