@@ -1,0 +1,33 @@
+{
+  "notebookName": "VET_Pet_care", 
+  "extractedAt": "2024-03-11T00:57:00Z",
+  "topics": [
+    {
+      "title": "반려견 심장사상충 예방의 중요성과 최신 치료법",
+      "description": "심장사상충은 반려견에게 치명적인 기생충 질환으로, 모기를 통해 전파됩니다. 조기 발견과 예방이 무엇보다 중요합니다.",
+      "summary": "<h3>📌 개요</h3><p>심장사상충(Dirofilaria immitis)은 반려견의 심장과 폐동맥에 기생하는 선충류로, 모기에 의해 전파되는 치명적인 질환입니다.</p><h3>💡 핵심 포인트</h3><ul><li>예방이 치료보다 훨씬 중요하고 안전합니다</li><li>매월 정기적인 예방약 투여가 필수입니다</li><li>연 1회 혈액검사로 조기 발견 가능합니다</li></ul><h3>🎯 타겟 독자</h3><p>반려견을 키우는 모든 보호자, 특히 산책을 자주 하는 견주</p>",
+      "fullContent": "<h2>심장사상충이란?</h2><p>심장사상충(Dirofilaria immitis)은 반려견의 심장과 폐동맥에 기생하는 선충류입니다. 성충은 최대 30cm까지 자라며...</p><h2>전파 경로</h2><p>모기가 감염된 개를 물 때 미세사상충을 섭취하고, 2-3주 후 다른 개를 물면서 감염시킵니다...</p><h2>증상</h2><ul><li>초기: 무증상</li><li>진행기: 기침, 운동 능력 저하</li><li>말기: 심부전, 복수, 호흡곤란</li></ul>",
+      "references": [
+        {
+          "type": "paper",
+          "title": "Current perspectives on heartworm disease",
+          "source": "Veterinary Parasitology",
+          "year": "2023",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/example",
+          "excerpt": "심장사상충 예방은 치료보다 95% 이상 비용 효과적이다"
+        }
+      ],
+      "sourceDocument": "소동물 임상영양학 5판 Ch.12",
+      "tags": ["심장사상충", "기생충", "예방접종", "심장질환"],
+      "animal": "dog",
+      "difficulty": "intermediate", 
+      "keyPoints": [
+        "예방이 치료보다 훨씬 중요하고 안전합니다",
+        "매월 정기적인 예방약 투여가 필수입니다", 
+        "연 1회 혈액검사로 조기 발견 가능합니다"
+      ],
+      "targetAudience": "반려견을 키우는 모든 보호자, 특히 산책을 자주 하는 견주",
+      "cardNewsAngle": "충격적인 통계로 시작 → 심각성 강조 → 쉬운 예방법 → 병원 방문 독려"
+    }
+  ]
+}

@@ -55,6 +55,15 @@ app.get('/api/trends', (req, res) => {
   res.json(topics);
 });
 
+// 개별 토픽 상세 조회
+app.get('/api/topic/:categoryId/:subcategoryId/:index', (req, res) => {
+  const { categoryId, subcategoryId, index } = req.params;
+  const topics = getAllTopics();
+  const topic = topics.find(t => t.categoryId === categoryId && t.subcategoryId === subcategoryId && t.title === decodeURIComponent(index));
+  if (!topic) return res.status(404).json({ error: 'Not found' });
+  res.json(topic);
+});
+
 app.get('/api/stats', (req, res) => {
   const data = loadData();
   const stats = { total: 0, categories: {} };
