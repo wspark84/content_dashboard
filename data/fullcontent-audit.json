@@ -1,0 +1,39 @@
+{
+  "auditDate": "2026-03-17",
+  "totalTopics": 1281,
+  "goodFullContent": 913,
+  "templateFullContent": 368,
+  "resummaryDone": 155,
+  "templateByCategory": {
+    "수의학": 295,
+    "트렌드분석": 53,
+    "국내 카페 모니터링": 20
+  },
+  "templateBySubcategory": {
+    "수의학 > 영양학": 97,
+    "수의학 > 질병백과": 100,
+    "수의학 > 처방식/치료식": 6,
+    "수의학 > 예방의학": 40,
+    "수의학 > 치과": 7,
+    "수의학 > 응급의학": 27,
+    "수의학 > 노령동물학": 18,
+    "트렌드분석 > 업계 뉴스": 40,
+    "트렌드분석 > 이슈/논란": 6,
+    "트렌드분석 > 제품/서비스": 7,
+    "국내 카페 모니터링 > 강아지 카페 이슈": 11,
+    "국내 카페 모니터링 > 고양이 카페 이슈": 9
+  },
+  "templatePatterns": [
+    "nutrition_template: 97건",
+    "disease_template: 100건",
+    "no_keyword_match: 118건",
+    "no_fullContent: 53건"
+  ],
+  "templatePatternCounts": {
+    "nutrition_template": 97,
+    "disease_template": 100,
+    "no_keyword_match": 118,
+    "no_fullContent": 53,
+    "short_fullContent": 0
+  }
+}
