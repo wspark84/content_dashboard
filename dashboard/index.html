@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>멍냥바이럴 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script>tailwind.config={theme:{extend:{colors:{bg:'#0f172a',card:'#1e293b',accent:'#38bdf8',green:'#22c55e',red:'#ef4444',yellow:'#eab308',purple:'#a78bfa'}}}}</script>
+  <style>
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Pretendard', -apple-system, sans-serif; }
+    .card { background: #1e293b; border-radius: 12px; border: 1px solid #334155; }
+    .badge { padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .badge-draft { background: #374151; color: #9ca3af; }
+    .badge-review { background: #854d0e33; color: #eab308; }
+    .badge-approved { background: #14532d33; color: #22c55e; }
+    .badge-published { background: #1e3a5f33; color: #38bdf8; }
+    .badge-failed { background: #7f1d1d33; color: #ef4444; }
+    .btn { padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: .15s; border: none; }
+    .btn:hover { filter: brightness(1.2); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-approve { background: #22c55e; color: #fff; }
+    .btn-reject { background: #ef4444; color: #fff; }
+    .btn-primary { background: #38bdf8; color: #0f172a; }
+    .btn-run { background: linear-gradient(135deg, #22c55e, #38bdf8); color: #0f172a; font-weight: 700; }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="border-b border-slate-700 px-4 sm:px-6 py-4">
+    <div class="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="text-3xl">🐾</div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">멍냥바이럴</h1>
+          <p class="text-xs text-slate-500">반려동물 콘텐츠 바이럴 엔진</p>
+        </div>
+      </div>
+      <!-- Pipeline Status Summary -->
+      <div class="flex items-center gap-4 text-xs">
+        <div id="pipeline-summary" class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-400 pulse"></span>
+          <span class="text-slate-400">파이프라인 상태 로딩중...</span>
+        </div>
+        <button onclick="runPipeline()" id="btn-run-pipeline" class="btn btn-run text-xs px-4 py-2">
+          ▶ 파이프라인 실행
+        </button>
+        <div class="text-slate-500" id="clock"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="p-4 sm:p-6 max-w-[1400px] mx-auto space-y-6">
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4" id="stat-cards">
+      <div class="card p-4"><div class="text-slate-400 text-xs sm:text-sm">총 콘텐츠</div><div class="text-xl sm:text-2xl font-bold mt-1" id="s-total">-</div></div>
+      <div class="card p-4"><div class="text-slate-400 text-xs sm:text-sm">오늘 발행</div><div class="text-xl sm:text-2xl font-bold mt-1 text-green-400" id="s-today">-</div></div>
+      <div class="card p-4"><div class="text-slate-400 text-xs sm:text-sm">총 조회수</div><div class="text-xl sm:text-2xl font-bold mt-1 text-sky-400" id="s-views">-</div></div>
+      <div class="card p-4"><div class="text-slate-400 text-xs sm:text-sm">총 전환</div><div class="text-xl sm:text-2xl font-bold mt-1 text-purple-400" id="s-conv">-</div></div>
+    </div>
+
+    <!-- Trending + Performance -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">🔥 트렌드 레이더</h2>
+        <div id="trending-list" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
+        <div id="trending-empty" class="text-slate-500 text-sm hidden">오늘의 트렌드 데이터가 없습니다</div>
+      </div>
+      <div class="md:col-span-2 card p-5">
+        <h2 class="font-bold text-lg mb-4">📈 일별 성과</h2>
+        <canvas id="perfChart" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- A/B Test + Learned Rules -->
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- A/B Tests -->
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">🧪 A/B 테스트 현황</h2>
+        <div id="ab-list" class="space-y-3 max-h-[350px] overflow-y-auto"></div>
+        <div id="ab-empty" class="text-slate-500 text-sm">A/B 테스트가 아직 없습니다</div>
+      </div>
+
+      <!-- Learned Rules -->
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">🧠 학습된 규칙</h2>
+        <div id="rules-list" class="space-y-3 max-h-[350px] overflow-y-auto"></div>
+        <div id="rules-empty" class="text-slate-500 text-sm">학습된 규칙이 아직 없습니다</div>
+      </div>
+    </div>
+
+    <!-- Funnel + Pipeline -->
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">🔄 전환 퍼널</h2>
+        <div id="funnel-bars" class="space-y-3"></div>
+        <div id="funnel-empty" class="text-slate-500 text-sm hidden">퍼널 데이터가 없습니다</div>
+      </div>
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">⚙️ 콘텐츠 파이프라인</h2>
+        <div id="pipeline-status" class="space-y-2"></div>
+        <div id="pipeline-empty" class="text-slate-500 text-sm hidden">파이프라인 데이터 없음</div>
+      </div>
+    </div>
+
+    <!-- Content Queue + Team Activity -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="md:col-span-2 card p-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+          <h2 class="font-bold text-lg">📋 콘텐츠 큐</h2>
+          <div class="flex gap-2 text-xs flex-wrap">
+            <button onclick="filterContents('')" class="px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600">전체</button>
+            <button onclick="filterContents('draft')" class="px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600">초안</button>
+            <button onclick="filterContents('review')" class="px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600">검수중</button>
+            <button onclick="filterContents('published')" class="px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600">발행됨</button>
+          </div>
+        </div>
+        <div id="content-list" class="space-y-2 max-h-[500px] overflow-y-auto"></div>
+        <div id="content-empty" class="text-slate-500 text-sm hidden">콘텐츠가 없습니다</div>
+      </div>
+      <div class="card p-5">
+        <h2 class="font-bold text-lg mb-4">👥 팀 활동</h2>
+        <div id="team-list" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
+        <div id="team-empty" class="text-slate-500 text-sm hidden">활동 로그가 없습니다</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Pipeline Run Modal -->
+  <div id="run-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
+    <div class="card p-6 w-full max-w-md mx-4">
+      <h3 class="font-bold text-lg mb-3">▶ 파이프라인 수동 실행</h3>
+      <p class="text-sm text-slate-400 mb-4">수집 → 분석 → 생성 → 발행 전체 파이프라인을 실행합니다.</p>
+      <div id="run-result" class="text-sm mb-4 hidden p-3 rounded-lg"></div>
+      <div class="flex gap-3 justify-end">
+        <button onclick="closeRunModal()" class="btn bg-slate-700 text-slate-300">취소</button>
+        <button onclick="confirmRun()" id="btn-confirm-run" class="btn btn-run">실행</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = '';
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+    updateClock(); setInterval(updateClock, 30000);
+
+    // Fetch helpers
+    async function api(path) {
+      try { return (await fetch(API + path)).json(); } catch { return []; }
+    }
+    async function apiPost(path, body={}) {
+      try { return (await fetch(API + path, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })).json(); }
+      catch { return { ok: false, error: 'Network error' }; }
+    }
+
+    // Stats
+    async function loadStats() {
+      const [stats, perf] = await Promise.all([api('/api/stats'), api('/api/performance?days=30')]);
+      document.getElementById('s-total').textContent = (stats.total || 0).toLocaleString();
+      document.getElementById('s-today').textContent = stats.todayPublished || 0;
+      document.getElementById('s-views').textContent = (perf.totals?.total_views || 0).toLocaleString();
+      document.getElementById('s-conv').textContent = (perf.totals?.total_conversions || 0).toLocaleString();
+      return perf;
+    }
+
+    // Performance Chart
+    let chart;
+    function renderChart(data) {
+      if (!data.daily) return;
+      const labels = data.daily.map(d => d.date.slice(5));
+      const views = data.daily.map(d => d.views || 0);
+      const clicks = data.daily.map(d => d.clicks || 0);
+      const ctx = document.getElementById('perfChart').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: '조회수', data: views, borderColor: '#38bdf8', backgroundColor: '#38bdf822', fill: true, tension: 0.3 },
+            { label: '클릭', data: clicks, borderColor: '#a78bfa', backgroundColor: '#a78bfa22', fill: true, tension: 0.3 },
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#94a3b8' } } },
+          scales: {
+            x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+            y: { ticks: { color: '#64748b' }, grid: { color: '#334155' } }
+          }
+        }
+      });
+    }
+
+    // Trending
+    async function loadTrending() {
+      const data = await api('/api/trending');
+      const el = document.getElementById('trending-list');
+      const empty = document.getElementById('trending-empty');
+      if (!data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      el.innerHTML = data.map((t, i) => `
+        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-slate-700/50 transition">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-500 w-5">${i+1}</span>
+            <span class="font-medium text-sm">${esc(t.keyword)}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-20 bg-slate-700 rounded-full h-1.5">
+              <div class="h-1.5 rounded-full bg-sky-400" style="width:${Math.min(t.score*10,100)}%"></div>
+            </div>
+            <span class="text-xs text-slate-400">${t.score?.toFixed(1) || '-'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // A/B Tests
+    async function loadABTests() {
+      const data = await api('/api/optimize/ab-tests');
+      const el = document.getElementById('ab-list');
+      const empty = document.getElementById('ab-empty');
+      if (!Array.isArray(data) || !data.length) { el.innerHTML = ''; empty.style.display = ''; return; }
+      empty.style.display = 'none';
+      el.innerHTML = data.map(t => {
+        const statusColor = t.status === 'completed' ? '#22c55e' : t.status === 'running' ? '#eab308' : '#64748b';
+        const statusText = t.status === 'completed' ? '완료' : t.status === 'running' ? '진행중' : '대기';
+        return `
+          <div class="p-3 rounded-lg bg-slate-800/50">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium">${esc(t.variable || t.name || '테스트')}</span>
+              <span class="badge" style="background:${statusColor}33;color:${statusColor}">${statusText}</span>
+            </div>
+            <div class="text-xs text-slate-400">
+              ${t.variant_a ? `A: ${esc(t.variant_a)} vs B: ${esc(t.variant_b)}` : ''}
+              ${t.winner ? `<span class="text-green-400 ml-2">🏆 승자: ${esc(t.winner)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Learned Rules
+    async function loadRules() {
+      const data = await api('/api/optimize/rules');
+      const el = document.getElementById('rules-list');
+      const empty = document.getElementById('rules-empty');
+      if (!Array.isArray(data) || !data.length) { el.innerHTML = ''; empty.style.display = ''; return; }
+      empty.style.display = 'none';
+      const icons = { title_pattern: '✏️', publish_time: '⏰', cta_type: '🎯', keyword: '🔑' };
+      el.innerHTML = data.map(r => `
+        <div class="p-3 rounded-lg bg-slate-800/50">
+          <div class="flex items-center gap-2 mb-1">
+            <span>${icons[r.type] || '💡'}</span>
+            <span class="text-sm font-medium">${esc(r.type || '규칙')}</span>
+            ${r.confidence ? `<span class="text-xs text-slate-500">${(r.confidence * 100).toFixed(0)}% 신뢰도</span>` : ''}
+          </div>
+          <p class="text-xs text-slate-400">${esc(r.rule || r.description || '')}</p>
+        </div>
+      `).join('');
+    }
+
+    // Contents
+    let allContents = [];
+    async function loadContents() {
+      allContents = await api('/api/contents');
+      if (!Array.isArray(allContents)) allContents = [];
+      renderContents(allContents);
+    }
+    function filterContents(status) {
+      renderContents(status ? allContents.filter(c => c.status === status) : allContents);
+    }
+    function renderContents(list) {
+      const el = document.getElementById('content-list');
+      const empty = document.getElementById('content-empty');
+      if (!list.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      el.innerHTML = list.map(c => `
+        <div class="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="badge badge-${c.status}">${statusLabel(c.status)}</span>
+              <span class="text-xs text-slate-500">${esc(c.type || '')}</span>
+            </div>
+            <div class="font-medium text-sm mt-1 truncate">${esc(c.title || '(제목 없음)')}</div>
+            <div class="text-xs text-slate-500 mt-0.5">${c.created_at || ''}</div>
+          </div>
+          <div class="flex gap-2 ml-3 shrink-0">
+            ${c.status === 'review' || c.status === 'draft' ? `
+              <button class="btn btn-approve" onclick="doApprove(${c.id})">승인</button>
+              <button class="btn btn-reject" onclick="doReject(${c.id})">반려</button>
+            ` : ''}
+            ${c.published_url ? `<a href="${esc(c.published_url)}" target="_blank" class="btn bg-slate-600 text-white">보기</a>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+    function statusLabel(s) {
+      return { draft:'초안', review:'검수중', approved:'승인됨', published:'발행됨', failed:'실패' }[s] || s;
+    }
+    async function doApprove(id) { await apiPost(`/api/contents/${id}/approve`); loadContents(); loadTeam(); }
+    async function doReject(id) { await apiPost(`/api/contents/${id}/reject`); loadContents(); loadTeam(); }
+
+    // Team
+    async function loadTeam() {
+      const data = await api('/api/team?limit=30');
+      const el = document.getElementById('team-list');
+      const empty = document.getElementById('team-empty');
+      if (!Array.isArray(data) || !data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      const icons = { approve:'✅', reject:'❌', edit:'✏️', comment:'💬', 'status:published':'🎉', 'status:approved':'✅', 'status:review':'🔍', 'status:draft':'📝' };
+      el.innerHTML = data.map(l => `
+        <div class="flex gap-3 text-sm">
+          <span>${icons[l.action] || '📌'}</span>
+          <div>
+            <span class="text-slate-300">${esc(l.user_role || 'system')}</span>
+            <span class="text-slate-500">· ${esc(l.action)}</span>
+            ${l.content_title ? `<div class="text-xs text-slate-500 truncate">${esc(l.content_title)}</div>` : ''}
+            <div class="text-xs text-slate-600">${l.created_at || ''}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Funnel
+    async function loadFunnel() {
+      const data = await api('/api/funnel?days=30');
+      const el = document.getElementById('funnel-bars');
+      const empty = document.getElementById('funnel-empty');
+      const f = data.funnel;
+      if (!f || (f.impressions === 0 && f.clicks === 0)) {
+        el.innerHTML = ''; empty.classList.remove('hidden'); return;
+      }
+      empty.classList.add('hidden');
+      const stages = [
+        { label: '노출', value: f.impressions, color: '#38bdf8' },
+        { label: '클릭', value: f.clicks, color: '#a78bfa', rate: f.conversionRates?.clickRate },
+        { label: '관심(CTA)', value: f.interest, color: '#eab308', rate: f.conversionRates?.interestRate },
+        { label: '상담', value: f.consultations, color: '#22c55e', rate: f.conversionRates?.consultRate },
+        { label: '구매', value: f.purchases, color: '#ef4444', rate: f.conversionRates?.purchaseRate },
+      ];
+      const max = Math.max(...stages.map(s => s.value), 1);
+      el.innerHTML = stages.map(s => `
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span>${s.label}</span>
+            <span class="text-slate-400">${s.value.toLocaleString()}${s.rate != null ? ` (${s.rate}%)` : ''}</span>
+          </div>
+          <div class="w-full bg-slate-700 rounded-full h-4">
+            <div class="h-4 rounded-full transition-all" style="width:${Math.max(s.value/max*100,2)}%;background:${s.color}"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Pipeline Status
+    async function loadPipeline() {
+      const data = await api('/api/pipeline');
+      const el = document.getElementById('pipeline-status');
+      const empty = document.getElementById('pipeline-empty');
+      if (!Array.isArray(data) || !data.length) { el.innerHTML = ''; empty.classList.remove('hidden'); updatePipelineSummary([]); return; }
+      empty.classList.add('hidden');
+      const statusColors = { draft:'#9ca3af', review:'#eab308', approved:'#22c55e', published:'#38bdf8', failed:'#ef4444' };
+      el.innerHTML = data.map(p => `
+        <div class="flex items-center justify-between p-2 rounded bg-slate-800/50">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full" style="background:${statusColors[p.status]||'#64748b'}"></div>
+            <span class="text-sm">${statusLabel(p.status)}</span>
+            <span class="text-xs text-slate-500">${esc(p.type || '')}</span>
+          </div>
+          <span class="text-sm font-bold">${p.cnt}</span>
+        </div>
+      `).join('');
+      updatePipelineSummary(data);
+    }
+
+    function updatePipelineSummary(data) {
+      const el = document.getElementById('pipeline-summary');
+      if (!data.length) {
+        el.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-500"></span><span class="text-slate-400">데이터 없음</span>';
+        return;
+      }
+      const total = data.reduce((s, d) => s + d.cnt, 0);
+      const published = data.filter(d => d.status === 'published').reduce((s, d) => s + d.cnt, 0);
+      const review = data.filter(d => d.status === 'review').reduce((s, d) => s + d.cnt, 0);
+      const failed = data.filter(d => d.status === 'failed').reduce((s, d) => s + d.cnt, 0);
+      const color = failed > 0 ? 'bg-red-400' : review > 0 ? 'bg-yellow-400' : 'bg-green-400';
+      el.innerHTML = `<span class="w-2 h-2 rounded-full ${color} pulse"></span>
+        <span class="text-slate-400">전체 ${total} · 발행 ${published} · 검수 ${review}${failed ? ` · <span class="text-red-400">실패 ${failed}</span>` : ''}</span>`;
+    }
+
+    // Pipeline Run
+    function runPipeline() { document.getElementById('run-modal').classList.remove('hidden'); }
+    function closeRunModal() {
+      document.getElementById('run-modal').classList.add('hidden');
+      document.getElementById('run-result').classList.add('hidden');
+    }
+    async function confirmRun() {
+      const btn = document.getElementById('btn-confirm-run');
+      const result = document.getElementById('run-result');
+      btn.disabled = true; btn.textContent = '실행중...';
+      const res = await apiPost('/api/pipeline/run');
+      result.classList.remove('hidden');
+      if (res.ok) {
+        result.className = 'text-sm mb-4 p-3 rounded-lg bg-green-900/30 text-green-400';
+        result.textContent = '✅ 파이프라인 실행이 시작되었습니다.';
+      } else {
+        result.className = 'text-sm mb-4 p-3 rounded-lg bg-red-900/30 text-red-400';
+        result.textContent = `❌ ${res.error || '파이프라인 실행 API가 아직 구현되지 않았습니다 (스텁)'}`;
+      }
+      btn.disabled = false; btn.textContent = '실행';
+    }
+
+    // XSS escape
+    function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+    // Init
+    async function init() {
+      const perf = await loadStats();
+      renderChart(perf);
+      await Promise.all([loadTrending(), loadContents(), loadTeam(), loadFunnel(), loadPipeline(), loadABTests(), loadRules()]);
+    }
+    init();
+    setInterval(init, 60000);
+  </script>
+</body>
+</html>
