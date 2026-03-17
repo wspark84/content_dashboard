@@ -16,6 +16,9 @@
   --card-radius:14px;--sidebar-w:240px;
 }
 body{font-family:'Pretendard',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+.diff-up{color:#3dd6b5;font-size:11px;font-weight:600;margin-left:2px}
+.diff-down{color:#ef4444;font-size:11px;font-weight:600;margin-left:2px}
+.crawl-info{font-size:11px;color:var(--text3);text-align:right;padding:4px 20px}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
 
 /* SIDEBAR */
@@ -148,6 +151,7 @@ body{font-family:'Pretendard',system-ui,-apple-system,sans-serif;background:var(
 
 <main class="main">
   <!-- 요약 카드 -->
+  <div class="crawl-info" id="crawlInfo"></div>
   <div class="summary-grid" id="summaryCards"></div>
 
   <!-- 계정 탭 -->
@@ -257,37 +261,64 @@ async function init() {
 // === 요약 카드 ===
 function renderSummary() {
   const d = perfData;
-  const totalViews = d.accountStats.reduce((s, a) => s + a.totalViews, 0);
-  const totalLikes = d.accountStats.reduce((s, a) => s + a.totalLikes, 0);
-  const totalComments = d.accountStats.reduce((s, a) => s + a.totalComments, 0);
+  const totalViews = d.accountStats.reduce((s, a) => s + (a.crawledViews || a.totalViews || 0), 0);
+  const totalLikes = d.accountStats.reduce((s, a) => s + (a.crawledLikes || a.totalLikes || 0), 0);
+  const totalComments = d.accountStats.reduce((s, a) => s + (a.crawledComments || a.totalComments || 0), 0);
+  const totalShares = d.accountStats.reduce((s, a) => s + (a.crawledShares || a.totalShares || 0), 0);
+  const totalPosts = d.accountStats.reduce((s, a) => s + (a.crawledPosts || 0), 0);
+
+  // 전일 대비 변화
+  const changes = d.snapshot?.changes || {};
+  function diffBadge(accountId, field) {
+    const ch = changes[accountId];
+    if (!ch || ch[field] === undefined || ch[field] === 0) return '';
+    const val = ch[field];
+    const cls = val > 0 ? 'diff-up' : 'diff-down';
+    return `<span class="${cls}">${val > 0 ? '▲' : '▼'}${Math.abs(val)}</span>`;
+  }
+
+  const lastCrawled = d.snapshot?.lastCrawled ? new Date(d.snapshot.lastCrawled).toLocaleString('ko-KR', {timeZone:'Asia/Seoul'}) : '없음';
 
   document.getElementById('summaryCards').innerHTML = `
     <div class="summary-card card-total">
-      <div class="summary-label"><span class="summary-icon">📝</span> 발행된 주제</div>
-      <div class="summary-value">${d.totalPublished.toLocaleString()}</div>
-      <div class="summary-sub">전체 ${d.totalTopics.toLocaleString()}개 중</div>
+      <div class="summary-label"><span class="summary-icon">📝</span> 총 발행 콘텐츠</div>
+      <div class="summary-value">${totalPosts.toLocaleString()}</div>
+      <div class="summary-sub">${d.accountStats.map(a => `${platformIcons[a.platform]||'🌐'} ${a.crawledPosts||0}`).join(' · ')}</div>
     </div>
     <div class="summary-card card-unused">
       <div class="summary-label"><span class="summary-icon">📋</span> 미활용 주제</div>
       <div class="summary-value">${d.totalUnused.toLocaleString()}</div>
-      <div class="summary-sub">활용 가능한 콘텐츠</div>
+      <div class="summary-sub">DB ${d.totalTopics.toLocaleString()}개 중 활용 가능</div>
     </div>
     <div class="summary-card card-views">
       <div class="summary-label"><span class="summary-icon">👁️</span> 총 조회수</div>
       <div class="summary-value">${totalViews.toLocaleString()}</div>
-      <div class="summary-sub">${d.accountStats.map(a => `${a.name}: ${a.totalViews.toLocaleString()}`).join(' · ')}</div>
+      <div class="summary-sub">${d.accountStats.map(a => {
+        const v = a.crawledViews || a.totalViews || 0;
+        return `${platformIcons[a.platform]||'🌐'} ${v.toLocaleString()} ${diffBadge(a.id, 'viewsDiff')}`;
+      }).join(' · ')}</div>
     </div>
     <div class="summary-card card-likes">
       <div class="summary-label"><span class="summary-icon">❤️</span> 총 좋아요</div>
       <div class="summary-value">${totalLikes.toLocaleString()}</div>
-      <div class="summary-sub">${d.accountStats.map(a => `${a.name}: ${a.totalLikes.toLocaleString()}`).join(' · ')}</div>
+      <div class="summary-sub">${d.accountStats.map(a => {
+        const v = a.crawledLikes || a.totalLikes || 0;
+        return `${platformIcons[a.platform]||'🌐'} ${v.toLocaleString()} ${diffBadge(a.id, 'likesDiff')}`;
+      }).join(' · ')}</div>
     </div>
     <div class="summary-card card-comments">
       <div class="summary-label"><span class="summary-icon">💬</span> 총 댓글</div>
       <div class="summary-value">${totalComments.toLocaleString()}</div>
-      <div class="summary-sub">${d.accountStats.map(a => `${a.name}: ${a.totalComments.toLocaleString()}`).join(' · ')}</div>
+      <div class="summary-sub">${d.accountStats.map(a => {
+        const v = a.crawledComments || a.totalComments || 0;
+        return `${platformIcons[a.platform]||'🌐'} ${v.toLocaleString()} ${diffBadge(a.id, 'commentsDiff')}`;
+      }).join(' · ')}</div>
     </div>
   `;
+
+  // 마지막 크롤링 시간 표시
+  const crawlInfoEl = document.getElementById('crawlInfo');
+  if (crawlInfoEl) crawlInfoEl.textContent = `마지막 업데이트: ${lastCrawled}`;
 }
 
 // === 탭 ===
@@ -418,9 +449,9 @@ function renderCharts() {
     data: {
       labels,
       datasets: [
-        { label: '발행 수', data: stats.map(s => s.publishedCount), backgroundColor: 'rgba(61,214,181,0.7)', borderRadius: 6 },
-        { label: '조회수', data: stats.map(s => s.totalViews), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6 },
-        { label: '좋아요', data: stats.map(s => s.totalLikes), backgroundColor: 'rgba(236,72,153,0.7)', borderRadius: 6 }
+        { label: '발행 수', data: stats.map(s => s.crawledPosts || s.publishedCount || 0), backgroundColor: 'rgba(61,214,181,0.7)', borderRadius: 6 },
+        { label: '조회수', data: stats.map(s => s.crawledViews || s.totalViews || 0), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 6 },
+        { label: '좋아요', data: stats.map(s => s.crawledLikes || s.totalLikes || 0), backgroundColor: 'rgba(236,72,153,0.7)', borderRadius: 6 }
       ]
     },
     options: {
@@ -433,10 +464,10 @@ function renderCharts() {
     }
   });
 
-  // 플랫폼별 비율 파이 차트
+  // 플랫폼별 콘텐츠 수 파이 차트
   const platformCounts = {};
   for (const s of stats) {
-    platformCounts[s.platform] = (platformCounts[s.platform] || 0) + s.publishedCount;
+    platformCounts[s.platform] = (platformCounts[s.platform] || 0) + (s.crawledPosts || s.publishedCount || 0);
   }
   const pieLabels = Object.keys(platformCounts).map(p => platformLabels[p] || p);
   const pieData = Object.values(platformCounts);
@@ -500,18 +531,25 @@ function renderAccountCards() {
     <div class="account-card">
       <div class="acc-icon">${platformIcons[acc.platform] || '🌐'}</div>
       <div class="acc-info">
-        <div class="acc-name">${acc.name}</div>
-        <div class="acc-url">${acc.url || ''}</div>
+        <div class="acc-name">${acc.name} <span style="font-size:10px;color:${acc.crawlEnabled !== false ? 'var(--accent)' : 'var(--text3)'};margin-left:4px">${acc.crawlEnabled !== false ? '● 활성' : '○ 비활성'}</span></div>
+        <div class="acc-url">${acc.url ? `<a href="${acc.url}" target="_blank" style="color:var(--text3);text-decoration:underline">${acc.url}</a>` : ''}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">${platformLabels[acc.platform] || acc.platform} · ID: ${acc.id}</div>
       </div>
       <div class="acc-actions">
+        <button class="acc-btn" onclick="editAccount('${acc.id}')" title="수정">✏️</button>
         <button class="acc-btn danger" onclick="deleteAccount('${acc.id}')" title="삭제">🗑️</button>
       </div>
     </div>
   `).join('');
 }
 
+let editingAccountId = null; // 수정 중인 계정 ID (null이면 신규)
+
 function showAddAccountModal() {
+  editingAccountId = null;
+  document.getElementById('accountModalTitle').textContent = '계정 추가';
   document.getElementById('accId').value = '';
+  document.getElementById('accId').disabled = false;
   document.getElementById('accPlatform').value = 'naver-blog';
   document.getElementById('accName').value = '';
   document.getElementById('accUrl').value = '';
@@ -519,13 +557,27 @@ function showAddAccountModal() {
   document.getElementById('accountModal').classList.add('show');
 }
 
+function editAccount(id) {
+  const acc = accountsData.accounts.find(a => a.id === id);
+  if (!acc) return;
+  editingAccountId = id;
+  document.getElementById('accountModalTitle').textContent = '계정 수정';
+  document.getElementById('accId').value = acc.id;
+  document.getElementById('accId').disabled = true; // ID는 수정 불가
+  document.getElementById('accPlatform').value = acc.platform || 'other';
+  document.getElementById('accName').value = acc.name || '';
+  document.getElementById('accUrl').value = acc.url || '';
+  document.getElementById('accChannelId').value = acc.channelId || '';
+  document.getElementById('accountModal').classList.add('show');
+}
+
 function closeAccountModal() {
+  editingAccountId = null;
   document.getElementById('accountModal').classList.remove('show');
 }
 
 async function saveAccount() {
   const body = {
-    id: document.getElementById('accId').value.trim(),
     platform: document.getElementById('accPlatform').value,
     name: document.getElementById('accName').value.trim(),
     url: document.getElementById('accUrl').value.trim()
@@ -533,20 +585,36 @@ async function saveAccount() {
   const channelId = document.getElementById('accChannelId').value.trim();
   if (channelId) body.channelId = channelId;
 
-  if (!body.id || !body.name) {
-    alert('ID와 이름은 필수입니다.');
+  if (!body.name) {
+    alert('이름은 필수입니다.');
     return;
   }
 
   try {
-    const res = await fetch('/api/accounts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let res;
+    if (editingAccountId) {
+      // 수정 모드
+      res = await fetch(`/api/accounts/${editingAccountId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    } else {
+      // 추가 모드
+      body.id = document.getElementById('accId').value.trim();
+      if (!body.id) { alert('ID는 필수입니다.'); return; }
+      res = await fetch('/api/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    }
     if (!res.ok) {
       const err = await res.json();
-      alert(err.error || '등록 실패');
+      alert(err.error || '저장 실패');
       return;
     }
     closeAccountModal();
-    // 새로고침
     accountsData = await fetchJSON('/api/accounts');
     perfData = await fetchJSON('/api/performance');
     renderAccountCards();
@@ -554,7 +622,7 @@ async function saveAccount() {
     renderTabs();
     renderCharts();
   } catch (e) {
-    alert('계정 등록 중 오류: ' + e.message);
+    alert('계정 저장 중 오류: ' + e.message);
   }
 }
 

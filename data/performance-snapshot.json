@@ -1,0 +1,524 @@
+{
+  "lastCrawled": "2026-03-16T23:30:07.779Z",
+  "today": "2026-03-16",
+  "accounts": [
+    {
+      "platform": "naver-blog",
+      "accountId": "naver-blog-lifelogics",
+      "totalPosts": 83,
+      "totalViews": 0,
+      "totalLikes": 58,
+      "totalComments": 8,
+      "totalShares": 14,
+      "recentPosts": [
+        {
+          "id": "224218325588",
+          "title": "퍼피 사료, 언제 어떻게 바꿔야 할까요? 건강하게 댕댕이 키우는 법",
+          "url": "https://blog.naver.com/lifelogics/224218325588",
+          "views": 0,
+          "likes": 0,
+          "comments": 2,
+          "shares": 0,
+          "date": "2026-03-16"
+        },
+        {
+          "id": "224217142855",
+          "title": "강아지 분리불안 극복! 단계별 훈련법 완벽 가이드",
+          "url": "https://blog.naver.com/lifelogics/224217142855",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-15"
+        },
+        {
+          "id": "224216956672",
+          "title": "봄 산책 전 반드시 확인하세요! 반려견 안전 체크리스트",
+          "url": "https://blog.naver.com/lifelogics/224216956672",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-15"
+        },
+        {
+          "id": "224216896762",
+          "title": "반려견 장 건강, 마이크로바이옴과 프로바이오틱스의 중요성",
+          "url": "https://blog.naver.com/lifelogics/224216896762",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-15"
+        },
+        {
+          "id": "224216222816",
+          "title": "필수! 강아지 예방접종 시기&종류 완벽 정리 (2026 최신)",
+          "url": "https://blog.naver.com/lifelogics/224216222816",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-14"
+        },
+        {
+          "id": "224215175323",
+          "title": "댕냥이와 힐링 캠핑! 준비물 꿀팁 체크리스트",
+          "url": "https://blog.naver.com/lifelogics/224215175323",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-13"
+        },
+        {
+          "id": "224214900170",
+          "title": "함양 산삼자연휴양림 3월 재개장! 반려동물 동반 가능한 힐링 스팟",
+          "url": "https://blog.naver.com/lifelogics/224214900170",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-13"
+        },
+        {
+          "id": "224214898386",
+          "title": "함양 산삼자연휴양림 3월 재개장! 반려동물 동반 가능한 힐링 스팟",
+          "url": "https://blog.naver.com/lifelogics/224214898386",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-13"
+        },
+        {
+          "id": "224214747193",
+          "title": "반려견/반려묘 아나필락시스: 원인, 증상, 식이 알레르겐 관리법",
+          "url": "https://blog.naver.com/lifelogics/224214747193",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-13"
+        },
+        {
+          "id": "224213913094",
+          "title": "강아지 쿨링 매트 효과? 여름철 댕댕이 더위 이기는 꿀팁!",
+          "url": "https://blog.naver.com/lifelogics/224213913094",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-12"
+        },
+        {
+          "id": "224213592662",
+          "title": "반려동물 의료비 지원금, 이렇게 받으세요! 2026년 최신 정보",
+          "url": "https://blog.naver.com/lifelogics/224213592662",
+          "views": 0,
+          "likes": 1,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-12"
+        },
+        {
+          "id": "224212631348",
+          "title": "강아지 수영장 안전 수칙과 수중 운동",
+          "url": "https://blog.naver.com/lifelogics/224212631348",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-11"
+        },
+        {
+          "id": "224212616929",
+          "title": "댕댕이 수영장 안전하게 즐기기! 수중 운동 효과 & 주의사항 완벽 정리",
+          "url": "https://blog.naver.com/lifelogics/224212616929",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-11"
+        },
+        {
+          "id": "224212325774",
+          "title": "낚싯바늘 삼킨 고양이, 보호자가 반드시 알아야 할 응급 대처법",
+          "url": "https://blog.naver.com/lifelogics/224212325774",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-11"
+        },
+        {
+          "id": "224211048250",
+          "title": "3월 발정기 지옥이 시작됐다! 반려인이 꼭 알아야 할 대처법",
+          "url": "https://blog.naver.com/lifelogics/224211048250",
+          "views": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "date": "2026-03-10"
+        }
+      ]
+    },
+    {
+      "platform": "youtube",
+      "accountId": "youtube-vet-nutrition",
+      "channelName": "vet_nutrition",
+      "totalSubscribers": 26,
+      "totalPosts": 51,
+      "totalViews": 41443,
+      "totalLikes": 31,
+      "totalComments": 0,
+      "recentPosts": [
+        {
+          "id": "H7rcEBGxe5s",
+          "title": "강아지 이름을 부르면 간식이 생긴다?! 파블로프의 충격적 비밀! 🔔",
+          "url": "https://youtube.com/watch?v=H7rcEBGxe5s",
+          "views": 1010,
+          "likes": 14,
+          "comments": 0,
+          "date": "2026-03-16"
+        },
+        {
+          "id": "B3YvU1rpFcA",
+          "title": "오메가-3 잘못 먹이면 오히려 독? 영양제 급여 전 꼭 봐야 할 이것!",
+          "url": "https://youtube.com/watch?v=B3YvU1rpFcA",
+          "views": 1701,
+          "likes": 0,
+          "comments": 0,
+          "date": "2026-03-13"
+        },
+        {
+          "id": "S9FDax2U6X0",
+          "title": "고양이 동공이 커지면 공격 직전? '진짜 원인 분석! 🤯'",
+          "url": "https://youtube.com/watch?v=S9FDax2U6X0",
+          "views": 1020,
+          "likes": 6,
+          "comments": 0,
+          "date": "2026-03-12"
+        },
+        {
+          "id": "wfkybAqITzE",
+          "title": "강아지 알레르기! 혈액검사? 그거 다 사기였습니다! 🤬",
+          "url": "https://youtube.com/watch?v=wfkybAqITzE",
+          "views": 1721,
+          "likes": 0,
+          "comments": 0,
+          "date": "2026-03-11"
+        },
+        {
+          "id": "Vv3YM8-I-p8",
+          "title": "캣닢에 반응 없는 고양이? '이 나무' 줬더니 80%가 미친 듯이 뒹굽니다! '(진짜 놀람!)'",
+          "url": "https://youtube.com/watch?v=Vv3YM8-I-p8",
+          "views": 1294,
+          "likes": 2,
+          "comments": 0,
+          "date": "2026-03-10"
+        },
+        {
+          "id": "nES4N4NpKoE",
+          "title": "우리 강아지가'병원 가는 것도 좋아하게' 만드는 비법!",
+          "url": "https://youtube.com/watch?v=nES4N4NpKoE",
+          "views": 761,
+          "likes": 0,
+          "comments": 0,
+          "date": "2026-03-09"
+        },
+        {
+          "id": "WTt0qeaKxAI",
+          "title": "이 견과류 먹이면 강아지 뒷다리 마비! '치명적인 간식!'",
+          "url": "https://youtube.com/watch?v=WTt0qeaKxAI",
+          "views": 789,
+          "likes": 2,
+          "comments": 0,
+          "date": "2026-03-09"
+        },
+        {
+          "id": "QY3QJjvnNjo",
+          "title": "고양이 치매에 나타나는 5가지 행동 변화! '당신의 고양이는 안전한가요?!'",
+          "url": "https://youtube.com/watch?v=QY3QJjvnNjo",
+          "views": 458,
+          "likes": 5,
+          "comments": 0,
+          "date": "2026-03-08"
+        },
+        {
+          "id": "Irb6gECeGfI",
+          "title": "고양이 사료 고르다 망했어요! 이것 모르면 사망 직전까지 갑니다!",
+          "url": "https://youtube.com/watch?v=Irb6gECeGfI",
+          "views": 279,
+          "likes": 0,
+          "comments": 0,
+          "date": "2026-03-08"
+        },
+        {
+          "id": "M-p_QS-zb58",
+          "title": "강아지가 숨겨온 사냥 본능 8단계!'착하다고만 생각하면 안됩니다.'",
+          "url": "https://youtube.com/watch?v=M-p_QS-zb58",
+          "views": 662,
+          "likes": 2,
+          "comments": 0,
+          "date": "2026-03-07"
+        }
+      ]
+    },
+    {
+      "platform": "instagram",
+      "accountId": "instagram-solopet6a",
+      "totalPosts": 0,
+      "totalFollowers": 0,
+      "totalViews": 0,
+      "totalLikes": 0,
+      "totalComments": 0,
+      "recentPosts": [],
+      "note": "Instagram API 제한으로 수동 업데이트 필요"
+    }
+  ],
+  "changes": {
+    "naver-blog-lifelogics": {
+      "viewsDiff": 0,
+      "likesDiff": 0,
+      "commentsDiff": 2,
+      "postsDiff": 0,
+      "sharesDiff": 0,
+      "subscribersDiff": 0
+    },
+    "youtube-vet-nutrition": {
+      "viewsDiff": 4,
+      "likesDiff": 31,
+      "commentsDiff": 0,
+      "postsDiff": 1,
+      "sharesDiff": 0,
+      "subscribersDiff": 2
+    },
+    "instagram-solopet6a": {
+      "viewsDiff": 0,
+      "likesDiff": 0,
+      "commentsDiff": 0,
+      "postsDiff": 0,
+      "sharesDiff": 0,
+      "subscribersDiff": 0
+    }
+  },
+  "history": [
+    {
+      "date": "2026-03-16",
+      "timestamp": "2026-03-16T23:30:07.767Z",
+      "accounts": [
+        {
+          "accountId": "naver-blog-lifelogics",
+          "platform": "naver-blog",
+          "totalPosts": 83,
+          "totalViews": 0,
+          "totalLikes": 58,
+          "totalComments": 8,
+          "totalShares": 14,
+          "totalSubscribers": 0
+        },
+        {
+          "accountId": "youtube-vet-nutrition",
+          "platform": "youtube",
+          "totalPosts": 51,
+          "totalViews": 41443,
+          "totalLikes": 31,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 26
+        },
+        {
+          "accountId": "instagram-solopet6a",
+          "platform": "instagram",
+          "totalPosts": 0,
+          "totalViews": 0,
+          "totalLikes": 0,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-03-15",
+      "timestamp": "2026-03-15T23:30:07.055Z",
+      "accounts": [
+        {
+          "accountId": "naver-blog-lifelogics",
+          "platform": "naver-blog",
+          "totalPosts": 83,
+          "totalViews": 0,
+          "totalLikes": 58,
+          "totalComments": 6,
+          "totalShares": 14,
+          "totalSubscribers": 0
+        },
+        {
+          "accountId": "youtube-vet-nutrition",
+          "platform": "youtube",
+          "totalPosts": 50,
+          "totalViews": 41439,
+          "totalLikes": 0,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 24
+        },
+        {
+          "accountId": "instagram-solopet6a",
+          "platform": "instagram",
+          "totalPosts": 0,
+          "totalViews": 0,
+          "totalLikes": 0,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-03-14",
+      "timestamp": "2026-03-14T23:30:05.846Z",
+      "accounts": [
+        {
+          "accountId": "naver-blog-lifelogics",
+          "platform": "naver-blog",
+          "totalPosts": 79,
+          "totalViews": 0,
+          "totalLikes": 58,
+          "totalComments": 6,
+          "totalShares": 14,
+          "totalSubscribers": 0
+        },
+        {
+          "accountId": "youtube-vet-nutrition",
+          "platform": "youtube",
+          "totalPosts": 50,
+          "totalViews": 40098,
+          "totalLikes": 26,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 24
+        },
+        {
+          "accountId": "instagram-solopet6a",
+          "platform": "instagram",
+          "totalPosts": 0,
+          "totalViews": 0,
+          "totalLikes": 0,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-03-13",
+      "timestamp": "2026-03-13T23:30:08.026Z",
+      "accounts": [
+        {
+          "accountId": "naver-blog-lifelogics",
+          "platform": "naver-blog",
+          "totalPosts": 78,
+          "totalViews": 0,
+          "totalLikes": 58,
+          "totalComments": 6,
+          "totalShares": 14,
+          "totalSubscribers": 0
+        },
+        {
+          "accountId": "youtube-vet-nutrition",
+          "platform": "youtube",
+          "totalPosts": 49,
+          "totalViews": 38387,
+          "totalLikes": 26,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 23
+        },
+        {
+          "accountId": "instagram-solopet6a",
+          "platform": "instagram",
+          "totalPosts": 0,
+          "totalViews": 0,
+          "totalLikes": 0,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-03-12",
+      "timestamp": "2026-03-12T23:30:05.779Z",
+      "accounts": [
+        {
+          "accountId": "naver-blog-lifelogics",
+          "platform": "naver-blog",
+          "totalPosts": 74,
+          "totalViews": 0,
+          "totalLikes": 58,
+          "totalComments": 6,
+          "totalShares": 14,
+          "totalSubscribers": 0
+        },
+        {
+          "accountId": "youtube-vet-nutrition",
+          "platform": "youtube",
+          "totalPosts": 48,
+          "totalViews": 38417,
+          "totalLikes": 27,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 23
+        },
+        {
+          "accountId": "instagram-solopet6a",
+          "platform": "instagram",
+          "totalPosts": 0,
+          "totalViews": 0,
+          "totalLikes": 0,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-03-11",
+      "timestamp": "2026-03-11T23:30:06.026Z",
+      "accounts": [
+        {
+          "accountId": "naver-blog-lifelogics",
+          "platform": "naver-blog",
+          "totalPosts": 72,
+          "totalViews": 0,
+          "totalLikes": 57,
+          "totalComments": 6,
+          "totalShares": 14,
+          "totalSubscribers": 0
+        },
+        {
+          "accountId": "youtube-vet-nutrition",
+          "platform": "youtube",
+          "totalPosts": 47,
+          "totalViews": 35631,
+          "totalLikes": 39,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 23
+        },
+        {
+          "accountId": "instagram-solopet6a",
+          "platform": "instagram",
+          "totalPosts": 0,
+          "totalViews": 0,
+          "totalLikes": 0,
+          "totalComments": 0,
+          "totalShares": 0,
+          "totalSubscribers": 0
+        }
+      ]
+    }
+  ]
+}

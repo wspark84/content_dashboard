@@ -1,10 +1,128 @@
-{
-  "lastRun": "2026-03-09T06:43:14.781Z",
-  "totalCrawled": 0,
-  "newAdded": 0,
-  "trendTotals": {
-    "업계 뉴스": 0,
-    "이슈/사건": 0,
-    "제품/트렌드": 0
+[
+  {
+    "date": "2026-03-17",
+    "timestamp": "2026-03-17T04:48:33.167Z",
+    "sourceStats": {
+      "Brave Search (반려동물 뉴스)": {
+        "status": "success",
+        "count": 0
+      },
+      "Brave Search (강아지 사료)": {
+        "status": "success",
+        "count": 0
+      },
+      "Brave Search (고양이 건강)": {
+        "status": "success",
+        "count": 0
+      },
+      "Brave Search (펫푸드 트렌드)": {
+        "status": "success",
+        "count": 0
+      },
+      "Brave Search (동물병원)": {
+        "status": "success",
+        "count": 0
+      },
+      "Brave Search (pet food news)": {
+        "status": "success",
+        "count": 0
+      },
+      "Brave Search (dog health study)": {
+        "status": "success",
+        "count": 0
+      },
+      "Brave Search (cat nutrition research)": {
+        "status": "success",
+        "count": 0
+      },
+      "데일리벳": {
+        "status": "success",
+        "count": 0
+      },
+      "축산신문": {
+        "status": "success",
+        "count": 0
+      },
+      "DC갤러리 강아지갤": {
+        "status": "success",
+        "count": 0
+      },
+      "DC갤러리 고양이갤": {
+        "status": "success",
+        "count": 0
+      },
+      "Reddit r/dogs": {
+        "status": "success",
+        "count": 3
+      },
+      "Reddit r/cats": {
+        "status": "success",
+        "count": 4
+      },
+      "Pet Food Industry": {
+        "status": "success",
+        "count": 0
+      }
+    },
+    "crawledCount": 7,
+    "uniqueCount": 7,
+    "addedByCategory": {
+      "trend-news": 7,
+      "trend-issue": 0,
+      "trend-product": 0
+    },
+    "removedOldCount": 0,
+    "totalTrendTopics": 41
+  },
+  {
+    "date": "2026-03-17",
+    "timestamp": "2026-03-17T04:52:37.786Z",
+    "stats": {
+      "Google News (반려동물)": {
+        "ok": true,
+        "count": 5
+      },
+      "Google News (사료)": {
+        "ok": true,
+        "count": 5
+      },
+      "Google News (펫푸드)": {
+        "ok": true,
+        "count": 5
+      },
+      "데일리벳": {
+        "ok": true,
+        "count": 5
+      },
+      "Reddit r/dogs": {
+        "ok": true,
+        "count": 3
+      },
+      "Reddit r/cats": {
+        "ok": true,
+        "count": 4
+      },
+      "DC 강아지갤": {
+        "ok": true,
+        "count": 1
+      },
+      "DC 고양이갤": {
+        "ok": true,
+        "count": 1
+      },
+      "Pet Food Industry": {
+        "ok": false,
+        "error": "0 results"
+      }
+    },
+    "crawled": 29,
+    "unique": 28,
+    "added": {
+      "trend-news": 18,
+      "trend-issue": 1,
+      "trend-product": 3
+    },
+    "removedOld": 0,
+    "totalTrend": 63
   }
-}
+]

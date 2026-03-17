@@ -64,8 +64,15 @@ function getAllTopics() {
   return topics;
 }
 
-// === 정적 파일 ===
-app.use(express.static(path.join(__dirname, 'public')));
+// === 정적 파일 (캐시 무효화) ===
+app.use(express.static(path.join(__dirname, 'public'), {
+  etag: false,
+  maxAge: 0,
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.set('Pragma', 'no-cache');
+  }
+}));
 
 // === 기존 API ===
 
@@ -298,11 +305,46 @@ app.get('/api/performance', (req, res) => {
       }
     }
 
+    // 크롤링 스냅샷 데이터 병합
+    let snapshot = null;
+    const snapPath = path.join(DATA_DIR, 'performance-snapshot.json');
+    try {
+      if (fs.existsSync(snapPath)) {
+        snapshot = JSON.parse(fs.readFileSync(snapPath, 'utf8'));
+      }
+    } catch(e) {}
+
+    // 스냅샷 데이터를 accountStats에 병합
+    if (snapshot?.accounts) {
+      for (const snapAcc of snapshot.accounts) {
+        if (accountStats[snapAcc.accountId]) {
+          const stat = accountStats[snapAcc.accountId];
+          stat.crawledViews = snapAcc.totalViews || 0;
+          stat.crawledLikes = snapAcc.totalLikes || 0;
+          stat.crawledComments = snapAcc.totalComments || 0;
+          stat.crawledShares = snapAcc.totalShares || 0;
+          stat.crawledPosts = snapAcc.totalPosts || 0;
+          stat.crawledSubscribers = snapAcc.totalSubscribers || snapAcc.totalFollowers || 0;
+          stat.recentPosts = snapAcc.recentPosts || [];
+          stat.channelName = snapAcc.channelName || '';
+          // 크롤링 데이터가 더 정확하면 덮어쓰기
+          if (snapAcc.totalViews > stat.totalViews) stat.totalViews = snapAcc.totalViews;
+          if (snapAcc.totalLikes > stat.totalLikes) stat.totalLikes = snapAcc.totalLikes;
+          if (snapAcc.totalComments > stat.totalComments) stat.totalComments = snapAcc.totalComments;
+        }
+      }
+    }
+
     res.json({
       totalTopics: topics.length,
       totalPublished,
       totalUnused,
-      accountStats: Object.values(accountStats)
+      accountStats: Object.values(accountStats),
+      snapshot: snapshot ? {
+        lastCrawled: snapshot.lastCrawled,
+        changes: snapshot.changes || {},
+        history: (snapshot.history || []).slice(0, 7) // 최근 7일만
+      } : null
     });
   } catch (e) {
     res.status(500).json({ error: '성과 데이터 조회 실패', detail: e.message });

@@ -88,10 +88,14 @@ async function crawlCafeMobile(page, cafe) {
           else views = parseInt(v.replace(/,/g, ''));
         }
         
-        // 날짜 추출
+        // 날짜 추출 (YYYY.MM.DD 또는 MM.DD. 또는 N시간전/N분전)
         const dateMatch = text.match(/(\d{4}\.\d{2}\.\d{2})/);
-        const timeMatch = text.match(/(\d+시간\s*전)/);
-        const date = dateMatch ? dateMatch[1] : (timeMatch ? timeMatch[1] : '');
+        const shortDateMatch = text.match(/(\d{2})\.(\d{2})\.(?!\d)/);
+        const timeMatch = text.match(/(\d+시간\s*전|\d+분\s*전)/);
+        let date = '';
+        if (dateMatch) date = dateMatch[1];
+        else if (shortDateMatch) date = new Date().getFullYear() + '.' + shortDateMatch[1] + '.' + shortDateMatch[2];
+        else if (timeMatch) date = timeMatch[1];
         
         // 작성자 추출 (제목 뒤 첫 번째 짧은 텍스트)
         const authorMatch = parts.length > 1 ? parts[1] : '';
@@ -157,9 +161,14 @@ async function crawlCafePC(page, cafe) {
             const authorEl = row?.querySelector('.td_name .p-nick a');
             const author = authorEl ? (authorEl.textContent || '').trim() : '';
             
-            // 날짜
+            // 날짜 (PC: "03.17." 또는 "2026.03.17" 형식)
             const dateEl = row?.querySelector('.td_date');
-            const date = dateEl ? (dateEl.textContent || '').trim() : '';
+            let date = dateEl ? (dateEl.textContent || '').trim() : '';
+            // 짧은 형식 "03.17." → 올해 기준 "2026.03.17"로 변환
+            const shortDate = date.match(/^(\d{2})\.(\d{2})\.?$/);
+            if (shortDate) {
+              date = new Date().getFullYear() + '.' + shortDate[1] + '.' + shortDate[2];
+            }
             
             if (title.length > 3) {
               results.push({
