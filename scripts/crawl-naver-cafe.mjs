@@ -88,17 +88,31 @@ async function crawlCafeMobile(page, cafe) {
           else views = parseInt(v.replace(/,/g, ''));
         }
         
-        // 날짜 추출 (YYYY.MM.DD 또는 MM.DD. 또는 N시간전/N분전)
+        // 날짜 추출 (YYYY.MM.DD 또는 MM.DD. 또는 N시간전/N분전/어제/HH:MM)
         const dateMatch = text.match(/(\d{4}\.\d{2}\.\d{2})/);
         const shortDateMatch = text.match(/(\d{2})\.(\d{2})\.(?!\d)/);
         const timeMatch = text.match(/(\d+시간\s*전|\d+분\s*전)/);
+        const yesterdayMatch = text.match(/어제/);
+        const timeOnlyMatch = text.match(/(?:^|\s)(\d{1,2}:\d{2})(?:\s|$)/);
         let date = '';
         if (dateMatch) date = dateMatch[1];
         else if (shortDateMatch) date = new Date().getFullYear() + '.' + shortDateMatch[1] + '.' + shortDateMatch[2];
         else if (timeMatch) date = timeMatch[1];
+        else if (yesterdayMatch) {
+          const y = new Date(Date.now() - 86400000);
+          date = y.getFullYear() + '.' + String(y.getMonth()+1).padStart(2,'0') + '.' + String(y.getDate()).padStart(2,'0');
+        } else if (timeOnlyMatch) {
+          // HH:MM만 있으면 오늘 날짜로 처리
+          const now = new Date();
+          date = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
+        }
         
-        // 작성자 추출 (제목 뒤 첫 번째 짧은 텍스트)
-        const authorMatch = parts.length > 1 ? parts[1] : '';
+        // 작성자 추출 (제목 뒤 첫 번째 짧은 텍스트, 시간값은 제외)
+        let authorMatch = parts.length > 1 ? parts[1] : '';
+        // HH:MM 패턴이 작성자로 잡힌 경우 다음 파트 사용
+        if (/^\d{1,2}:\d{2}$/.test(authorMatch.trim()) && parts.length > 2) {
+          authorMatch = parts[2];
+        }
         
         results.push({
           title: title.substring(0, 100),
