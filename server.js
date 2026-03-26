@@ -103,7 +103,21 @@ app.get('/api/topics', (req, res) => {
 });
 
 app.get('/api/trends', (req, res) => {
-  const topics = getAllTopics().sort((a, b) => b.viralScore - a.viralScore).slice(0, 10);
+  const twoWeeksAgo = new Date();
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+  const topics = getAllTopics()
+    .filter(t => {
+      // Use crawledAt (trend topics) or date (regular topics)
+      const dateStr = t.crawledAt || t.date;
+      if (!dateStr) return false;
+      // Parse various date formats: "2026-03-25", "2026.03.25", ISO string
+      const normalized = String(dateStr).replace(/\./g, '-').split('T')[0];
+      const parsed = new Date(normalized);
+      return !isNaN(parsed.getTime()) && parsed >= twoWeeksAgo;
+    })
+    .sort((a, b) => b.viralScore - a.viralScore)
+    .slice(0, 10);
   res.json(topics);
 });
 
