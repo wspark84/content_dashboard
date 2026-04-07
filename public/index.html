@@ -1302,7 +1302,7 @@ async function loadTopics() {
         <div class="card-animal">${animalIcon[t.animal]}</div>
       </div>
       <div class="card-desc">${t.description}</div>
-      ${(t.crawledAt || t.createdAt || t.publishedAt || t.date) ? `<div class="card-date">📅 ${(() => { const d = new Date(t.crawledAt || t.createdAt || t.publishedAt || t.date); return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0'); })()}${t.source ? ' · ' + t.source : ''}</div>` : ''}
+      ${(t.date || t.publishedAt || t.createdAt || t.crawledAt) ? `<div class="card-date">📅 ${(() => { const raw = String(t.date || t.publishedAt || t.createdAt || t.crawledAt); if (/^\\d{4}\\.\\d{1,2}\\.\\d{1,2}/.test(raw)) return raw.replace(/\\.$/, ''); if (/시간|일.*전|분.*전/.test(raw)) return raw; const d = new Date(raw); return !isNaN(d) ? d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0') : raw; })()}${t.source ? ' · ' + t.source : ''}</div>` : ''}
       <div class="card-tags">${t.tags.slice(0,4).map(tag => `<span class="tag">#${tag}</span>`).join('')}</div>
       <div class="card-footer">
         <span class="diff-badge diff-${t.difficulty}">${diffLabel[t.difficulty]}</span>
@@ -1388,12 +1388,22 @@ function showModal(t) {
   document.getElementById('modalSource').textContent = sourceInfo;
   document.getElementById('modalSource').style.display = sourceInfo ? 'block' : 'none';
 
-  // 작성일/수집일 표시
+  // 작성일 표시 (원글 작성일 date > publishedAt > createdAt > 수집일 crawledAt)
   const dateEl = document.getElementById('modalDate');
-  const dateValue = t.crawledAt || t.createdAt || t.publishedAt || t.date;
+  const dateValue = t.date || t.publishedAt || t.createdAt || t.crawledAt;
   if (dateValue) {
-    const d = new Date(dateValue);
-    const formatted = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+    let formatted;
+    const raw = String(dateValue);
+    // "2025.11.20" 또는 "N시간 전" 같은 한국어 형식 처리
+    if (/^\d{4}\.\d{1,2}\.\d{1,2}/.test(raw)) {
+      formatted = raw.replace(/\.$/, '');
+    } else if (/시간\s*전|일\s*전|분\s*전/.test(raw)) {
+      formatted = raw;
+    } else {
+      const d = new Date(raw);
+      if (!isNaN(d)) formatted = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+      else formatted = raw;
+    }
     const sourceLabel = t.source ? ` (${t.source})` : '';
     dateEl.innerHTML = `<span class="date-icon">📅</span> 작성일: ${formatted}${sourceLabel}`;
     dateEl.style.display = 'flex';
