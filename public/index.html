@@ -674,6 +674,20 @@ body{
   border-radius:var(--radius-s);
   border-left:3px solid var(--accent);
 }
+.modal .modal-date{
+  font-size:calc(var(--step-0) * 0.9);
+  color:var(--text-3);
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.modal .modal-date .date-icon{color:var(--accent)}
+.card-date{
+  font-size:calc(var(--step-0) * 0.82);
+  color:var(--text-3);
+  margin-top:4px;
+}
 .modal .modal-meta{
   display:flex;
   flex-wrap:wrap;
@@ -1098,6 +1112,7 @@ body{
     <h2 id="modalTitle"></h2>
     <div class="modal-cat" id="modalCat"></div>
     <div class="modal-source" id="modalSource"></div>
+    <div class="modal-date" id="modalDate"></div>
     <div class="modal-meta" id="modalMeta"></div>
     <div class="modal-tags" id="modalTags"></div>
     <div class="viral-big">
@@ -1287,6 +1302,7 @@ async function loadTopics() {
         <div class="card-animal">${animalIcon[t.animal]}</div>
       </div>
       <div class="card-desc">${t.description}</div>
+      ${(t.crawledAt || t.createdAt || t.publishedAt || t.date) ? `<div class="card-date">📅 ${(() => { const d = new Date(t.crawledAt || t.createdAt || t.publishedAt || t.date); return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0'); })()}${t.source ? ' · ' + t.source : ''}</div>` : ''}
       <div class="card-tags">${t.tags.slice(0,4).map(tag => `<span class="tag">#${tag}</span>`).join('')}</div>
       <div class="card-footer">
         <span class="diff-badge diff-${t.difficulty}">${diffLabel[t.difficulty]}</span>
@@ -1371,6 +1387,19 @@ function showModal(t) {
   }
   document.getElementById('modalSource').textContent = sourceInfo;
   document.getElementById('modalSource').style.display = sourceInfo ? 'block' : 'none';
+
+  // 작성일/수집일 표시
+  const dateEl = document.getElementById('modalDate');
+  const dateValue = t.crawledAt || t.createdAt || t.publishedAt || t.date;
+  if (dateValue) {
+    const d = new Date(dateValue);
+    const formatted = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+    const sourceLabel = t.source ? ` (${t.source})` : '';
+    dateEl.innerHTML = `<span class="date-icon">📅</span> 작성일: ${formatted}${sourceLabel}`;
+    dateEl.style.display = 'flex';
+  } else {
+    dateEl.style.display = 'none';
+  }
 
   document.getElementById('modalMeta').innerHTML = `
     <span class="diff-badge diff-${t.difficulty}">${diffLabel[t.difficulty]}</span>
