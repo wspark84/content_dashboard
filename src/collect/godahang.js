@@ -67,7 +67,7 @@ async function fetchViaNaverSearch(boardName, limit = 10) {
         url: href,
         author: '',
         views: 0, likes: 0, comments: 0,
-        published_at: null,
+        published_at: new Date().toISOString(),
       });
     });
   } catch (e) {

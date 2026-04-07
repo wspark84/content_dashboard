@@ -9,6 +9,33 @@ const HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36',
 };
 
+/**
+ * DC갤러리 날짜 텍스트를 ISO 형식으로 변환
+ * "04.07", "04-07", "16:30", "2026.04.07" 등 처리
+ */
+function parseDcDate(dateText) {
+  if (!dateText) return null;
+  const now = new Date();
+  // "HH:MM" 형식 (오늘 작성)
+  if (/^\d{1,2}:\d{2}$/.test(dateText)) {
+    const [h, m] = dateText.split(':').map(Number);
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m);
+    return d.toISOString();
+  }
+  // "MM.DD" 또는 "MM-DD" 형식
+  const md = dateText.match(/^(\d{1,2})[.\-](\d{1,2})$/);
+  if (md) {
+    const d = new Date(now.getFullYear(), parseInt(md[1]) - 1, parseInt(md[2]));
+    return d.toISOString();
+  }
+  // "YYYY.MM.DD" 형식
+  const ymd = dateText.match(/(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})/);
+  if (ymd) {
+    return new Date(`${ymd[1]}-${ymd[2].padStart(2,'0')}-${ymd[3].padStart(2,'0')}T00:00:00+09:00`).toISOString();
+  }
+  return null;
+}
+
 async function fetchGallery(galleryId) {
   const posts = [];
   try {
@@ -48,7 +75,7 @@ async function fetchGallery(galleryId) {
         views: parseInt(viewText.replace(/[^0-9]/g, '')) || 0,
         likes: parseInt(recommText.replace(/[^0-9]/g, '')) || 0,
         comments: parseInt($el.find('.ct').text().replace(/[^0-9]/g, '')) || 0,
-        published_at: dateText || null,
+        published_at: parseDcDate(dateText) || new Date().toISOString(),
       });
     });
   } catch (e) {

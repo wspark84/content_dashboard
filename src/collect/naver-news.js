@@ -9,6 +9,27 @@ const HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
 };
 
+/**
+ * 네이버 뉴스 날짜 텍스트를 ISO 문자열로 변환
+ * "1일 전", "3시간 전", "2026.04.07.", "4분 전" 등 처리
+ */
+function resolveDate(text) {
+  if (!text) return null;
+  // YYYY.MM.DD. 형식
+  const ymd = text.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
+  if (ymd) return new Date(`${ymd[1]}-${ymd[2].padStart(2,'0')}-${ymd[3].padStart(2,'0')}T00:00:00+09:00`).toISOString();
+  // N일 전
+  const daysAgo = text.match(/(\d+)일\s*전/);
+  if (daysAgo) { const d = new Date(); d.setDate(d.getDate() - parseInt(daysAgo[1])); return d.toISOString(); }
+  // N시간 전
+  const hoursAgo = text.match(/(\d+)시간\s*전/);
+  if (hoursAgo) { const d = new Date(); d.setHours(d.getHours() - parseInt(hoursAgo[1])); return d.toISOString(); }
+  // N분 전
+  const minsAgo = text.match(/(\d+)분\s*전/);
+  if (minsAgo) { const d = new Date(); d.setMinutes(d.getMinutes() - parseInt(minsAgo[1])); return d.toISOString(); }
+  return null;
+}
+
 async function searchNews(keyword, limit = 10) {
   const posts = [];
   try {
@@ -18,8 +39,21 @@ async function searchNews(keyword, limit = 10) {
     const html = await res.text();
     const $ = cheerio.load(html);
 
-    // Collect unique news article links with titles
+    // Collect unique news article links with titles and dates
     const seen = new Set();
+    // Extract date info from news items (각 뉴스 아이템의 날짜 정보 수집)
+    const dateMap = new Map();
+    $('span.info').each((_, el) => {
+      const txt = $(el).text().trim();
+      // "N일 전", "N시간 전", "YYYY.MM.DD." 등
+      const parent = $(el).closest('li, div, .news_wrap, .bx');
+      const link = parent.find('a[href*="news.naver.com/article"], a[href*="entertain.naver.com/article"]').attr('href');
+      if (link) {
+        const resolved = resolveDate(txt);
+        if (resolved) dateMap.set(link, resolved);
+      }
+    });
+
     $('a').each((i, el) => {
       if (posts.length >= limit) return false;
       const href = $(el).attr('href') || '';
@@ -39,7 +73,7 @@ async function searchNews(keyword, limit = 10) {
         url: href,
         author: '',
         views: 0, likes: 0, comments: 0,
-        published_at: new Date().toISOString(),
+        published_at: dateMap.get(href) || new Date().toISOString(),
       });
     });
 
@@ -65,7 +99,7 @@ async function searchNews(keyword, limit = 10) {
             url: href,
             author: '',
             views: 0, likes: 0, comments: 0,
-            published_at: new Date().toISOString(),
+            published_at: dateMap.get(href) || new Date().toISOString(),
           });
         }
       });

@@ -80,7 +80,9 @@ export async function runFullPipeline() {
 }
 
 // CLI 실행
-if (import.meta.url === `file://${process.argv[1]}`) {
+const __filename = new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1');
+const isMain = process.argv[1] && (__filename === process.argv[1].replace(/\\/g, '/') || import.meta.url === `file://${process.argv[1]}`);
+if (isMain) {
   runFullPipeline()
     .then(r => {
       console.log('\n📋 결과 요약:', JSON.stringify(r._summary, null, 2));

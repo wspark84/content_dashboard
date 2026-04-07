@@ -261,7 +261,7 @@ export async function runScoring() {
   const clusters = clusterKeywords(keywords.map(([kw]) => kw));
 
   // 스코어 계산 (클러스터 대표 키워드 기준)
-  const results = [];
+  let results = [];
 
   for (const cluster of clusters) {
     const mainKw = cluster.keywords[0];

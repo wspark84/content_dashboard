@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenvConfig({ path: resolve(__dirname, '../../.env') });
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const MODEL = 'chatgpt-4o-latest';
+const MODEL = 'gpt-4o';
 const API_URL = 'https://api.openai.com/v1/chat/completions';
 
 /**

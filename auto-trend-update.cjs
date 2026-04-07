@@ -17,7 +17,7 @@ async function main() {
   try {
     // inject-trends.js 실행 (수동으로 데이터 갱신 시 사용)
     // 실제 자동화는 openclaw의 web_search를 통해 하트비트에서 처리
-    execSync('node ' + path.join(__dirname, 'inject-trends.js'), { stdio: 'inherit' });
+    execSync('node ' + path.join(__dirname, 'inject-trends.cjs'), { stdio: 'inherit' });
     
     const log = {
       lastUpdate: new Date().toISOString(),

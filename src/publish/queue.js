@@ -96,7 +96,7 @@ export async function processQueue(options = {}) {
 // CLI 직접 실행
 const isMain = process.argv[1]?.includes('queue.js') || process.argv[1]?.endsWith('publish/queue.js');
 if (isMain) {
-  const dryRun = process.argv.includes('--dry-run') || process.argv.includes('--dryrun') || true; // 기본 dry-run
+  const dryRun = process.argv.includes('--dry-run') || process.argv.includes('--dryrun');
   console.log(`🚀 발행 큐 처리 시작 (dryRun: ${dryRun})`);
   processQueue({ dryRun })
     .then(r => {
